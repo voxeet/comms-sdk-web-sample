@@ -1,0 +1,27 @@
+h1.title, h2.title {
+    font-weight: 300;
+    font-size: 2.5rem;
+    text-align: center !important;
+    margin: 1.5rem
+}
+
+footer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.red {
+    color: red;
+}
+
+.gray {
+    color: gray;
+}
+
+.card video {
+    background-color: black;
+}
