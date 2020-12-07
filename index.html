@@ -95,6 +95,7 @@
                 </div>
             </div>
     
+            <!-- Video Devices -->
             <div class="form-group row">
                 <label for="video-devices" class="col-sm-3 col-form-label">Video Devices:</label>
                 <div class="col-sm-9">
@@ -107,6 +108,7 @@
                 </div>
             </div>
     
+            <!-- Input Audio Devices -->
             <div class="form-group row">
                 <label for="input-audio-devices" class="col-sm-3 col-form-label">Input Audio Devices:</label>
                 <div class="col-sm-9">
@@ -119,6 +121,7 @@
                 </div>
             </div>
     
+            <!-- Output Audio Devices -->
             <div class="form-group row">
                 <label for="output-audio-devices" class="col-sm-3 col-form-label">Output Audio Devices:</label>
                 <div class="col-sm-9">
@@ -230,7 +233,7 @@
                 <label for="message-input" class="col-sm-3 col-form-label">Message:</label>
                 <div class="col-sm-9">
                 <div class="input-group input-group-sm">
-                    <input id="message-input" type="text" class="form-control" value="Hello!">
+                    <input id="message-input" type="text" class="form-control" value="Bonjour">
                     <div class="input-group-append">
                         <button id="send-message-btn" class="btn btn-primary" type="button" disabled>Send</button>
                     </div>
@@ -241,23 +244,23 @@
         </div>
 
         <!-- Display the list of participants -->
-        <div>
+        <div class="bg-light">
             <div class="container">
                 <h2 class="title">Participants</h3>
                 <ul id="participants-list"></ul>
             </div>
         </div>
 
-        <div class="bg-light">
+        <!-- Container for the video streams -->
+        <div>
             <div class="container">
                 <h2 class="title">Video Streams</h2>
-
-                <!-- Container for the video streams -->
                 <div id="streams-containers" class="row"></div>
             </div>
         </div>
 
-        <div>
+        <!-- Display logs -->
+        <div class="bg-light">
             <div class="container">
                 <h2 class="title">Logs</h2>
                 <div class="form-group">
@@ -279,7 +282,7 @@
     <script id="template-video" type="text/x-jsrender">
         <div id="stream-{{:id}}" class="col-md-4">
             <div class="card mb-4 shadow-sm">
-                <video width="100%" height="225" autoplay="autoplay" muted="true"></video>
+                <video width="100%" height="225" autoplay="autoplay" muted="true" playsinline="true"></video>
                 <div class="card-body">
                     <p class="card-text">This is a video stream from {{:name}}.</p>
                     <div class="d-flex justify-content-between align-items-center">
@@ -295,7 +298,7 @@
     <script id="template-screenshare" type="text/x-jsrender">
         <div id="stream-screenshare" class="col-md-6">
             <div class="card mb-4 shadow-sm">
-                <video width="100%" height="300" autoplay="autoplay" muted="true"></video>
+                <video width="100%" height="300" autoplay="autoplay" muted="true" playsinline="true"></video>
                 <div class="card-body">
                     <p class="card-text">This is a screen share from {{:name}}.</p>
                 </div>
@@ -306,7 +309,7 @@
     <script id="template-video-url" type="text/x-jsrender">
         <div id="stream-video" class="col-md-6">
             <div class="card mb-4 shadow-sm">
-                <video width="100%" height="300" autoplay="autoplay" src="{{:url}}"></video>
+                <video width="100%" height="300" autoplay="autoplay" playsinline="true" src="{{:url}}"></video>
             </div>
         </div>
     </script>
