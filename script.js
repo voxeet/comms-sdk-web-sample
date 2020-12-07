@@ -317,7 +317,7 @@ $("#start-audio-btn").click(() => {
 });
 
 $("#stop-audio-btn").click(() => {
-    logErrors("VoxeetSDK.conference.stopAudio");
+    logMessage("VoxeetSDK.conference.stopAudio");
 
     // Stop sharing the audio with the other participants
     VoxeetSDK.conference.stopAudio(VoxeetSDK.session.participant)
@@ -327,7 +327,7 @@ $("#stop-audio-btn").click(() => {
             $("#mute-audio-btn").attr('disabled', true);
             $("#unmute-audio-btn").attr('disabled', true);
         })
-        .catch((err) => logErrors(err));
+        .catch((err) => logMessage(err));
 });
 
 $("#mute-audio-btn").click(() => {
