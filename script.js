@@ -247,8 +247,8 @@ $("#btn-set-output-audio-device").click(async () => {
 
 
 const startVideo = () => {
-    const payloadConstraints = webRtcConstraints;
-    payloadConstraints.video.deviceId = $('#video-devices').val();
+    const payloadConstraints = { constraints: webRtcConstraints };
+    payloadConstraints.constraints.video.deviceId = $('#video-devices').val();
     logMessage(`VoxeetSDK.conference.startVideo with ${JSON.stringify(payloadConstraints)}`);
 
     // Start sharing the video with the other participants
