@@ -43,6 +43,21 @@ $("#btn-set-webrtc-constraints").click(function() {
     }
 
     logMessage(`Set Web RTC Constraints: ${JSON.stringify(webRtcConstraints)}`);
+
+    if (VoxeetSDK.conference.current != null) {
+        VoxeetSDK.session.participant.streams.forEach(stream => {
+            if (stream.active && stream.type === "Camera") {
+                logMessage("VoxeetSDK.conference.stopVideo");
+
+                // Stop the video and restart it with the new constraints
+                VoxeetSDK.conference
+                    .stopVideo(VoxeetSDK.session.participant)
+                    .then(startVideo)
+                    .catch((err) => logMessage(err));
+                return;
+            }
+        });
+    }
 });
 
 $("#connect-btn").click(function() {
@@ -231,19 +246,22 @@ $("#btn-set-output-audio-device").click(async () => {
 
 
 
-$("#start-video-btn").click(() => {
+const startVideo = () => {
     const payloadConstraints = webRtcConstraints;
     payloadConstraints.video.deviceId = $('#video-devices').val();
     logMessage(`VoxeetSDK.conference.startVideo with ${JSON.stringify(payloadConstraints)}`);
 
     // Start sharing the video with the other participants
-    VoxeetSDK.conference.startVideo(VoxeetSDK.session.participant, payloadConstraints)
+    VoxeetSDK.conference
+        .startVideo(VoxeetSDK.session.participant, payloadConstraints)
         .then(() => {
             $("#start-video-btn").attr('disabled', true);
             $("#stop-video-btn").attr('disabled', false);
         })
         .catch((err) => logMessage(err));
-});
+};
+
+$("#start-video-btn").click(startVideo);
 
 $("#stop-video-btn").click(() => {
     logMessage("VoxeetSDK.conference.stopVideo");
