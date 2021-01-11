@@ -15,49 +15,57 @@ function logMessage(message) {
 
 var conferenceId;
 
-let webRtcConstraints = {
-    audio: true,
-    video: { width: 640, height: 480 }
+const getConstraints = () => {
+    let video = { width: 640, height: 480 };
+
+    let value = $('#webrtc-constraints').val();
+    if (value === "640") {
+        video = { width: 640, height: 360 };
+    } else if (value === "960") {
+        video = { width: 960, height: 540 };
+    } else if (value === "1280") {
+        video = { width: 1280, height: 720 };
+    } else if (value === "1920") {
+        video = { width: 1920, height: 1080 };
+    } else if (value === "ideal640") {
+        video = { width: { ideal: 640 }, height: { ideal: 360 } };
+    } else if (value === "ideal960") {
+        video = { width: { ideal: 960 }, height: { ideal: 540 } };
+    } else if (value === "ideal1280") {
+        video = { width: { ideal: 1280 }, height: { ideal: 720 } };
+    } else if (value === "ideal1920") {
+        video = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+    } else if (value === "min640") {
+        video = { width: { min: 640 }, height: { min: 360 } };
+    } else if (value === "min960") {
+        video = { width: { min: 960 }, height: { min: 540 } };
+    } else if (value === "min1280") {
+        video = { width: { min: 1280 }, height: { min: 720 } };
+    } else if (value === "min1920") {
+        video = { width: { min: 1920 }, height: { min: 1080 } };
+    }
+
+    return {
+        constraints: {
+            audio: true,
+            video: video
+        }
+    };
 };
 
 $("#btn-set-webrtc-constraints").click(function() {
-    let value = $('#webrtc-constraints').val();
-    if (value === "0") {
-        webRtcConstraints.video = { width: 640, height: 480 };
-    } else if (value === "1") {
-        webRtcConstraints.video = { width: 1280, height: 960 };
-    } else if (value === "2") {
-        webRtcConstraints.video = { width: 1920, height: 1080 };
-    } else if (value === "3") {
-        webRtcConstraints.video = { width: { ideal: 640 }, height: { ideal: 480 } };
-    } else if (value === "4") {
-        webRtcConstraints.video = { width: { ideal: 1280 }, height: { ideal: 960 } };
-    } else if (value === "5") {
-        webRtcConstraints.video = { width: { ideal: 1920 }, height: { ideal: 1080 } };
-    } else if (value === "6") {
-        webRtcConstraints.video = { width: { min: 640 }, height: { min: 480 } };
-    } else if (value === "7") {
-        webRtcConstraints.video = { width: { min: 1280 }, height: { min: 960 } };
-    } else if (value === "8") {
-        webRtcConstraints.video = { width: { min: 1920 }, height: { min: 1080 } };
-    }
+    VoxeetSDK.session.participant.streams.forEach(stream => {
+        if (stream.active && stream.type === "Camera") {
+            logMessage("VoxeetSDK.conference.stopVideo");
 
-    logMessage(`Set Web RTC Constraints: ${JSON.stringify(webRtcConstraints)}`);
-
-    if (VoxeetSDK.conference.current != null) {
-        VoxeetSDK.session.participant.streams.forEach(stream => {
-            if (stream.active && stream.type === "Camera") {
-                logMessage("VoxeetSDK.conference.stopVideo");
-
-                // Stop the video and restart it with the new constraints
-                VoxeetSDK.conference
-                    .stopVideo(VoxeetSDK.session.participant)
-                    .then(startVideo)
-                    .catch((err) => logMessage(err));
-                return;
-            }
-        });
-    }
+            // Stop the video and restart it with the new constraints
+            VoxeetSDK.conference
+                .stopVideo(VoxeetSDK.session.participant)
+                .then(startVideo)
+                .catch((err) => logMessage(err));
+            return;
+        }
+    });
 });
 
 $("#connect-btn").click(function() {
@@ -102,10 +110,8 @@ $("#conference-join-btn").click(function() {
             conferenceId = conference.id;
 
             // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/joinoptions
-            let joinOptions = {
-                constraints: webRtcConstraints,
-                simulcast: false
-            };
+            const joinOptions = getConstraints();
+            joinOptions.simulcast = false;
 
             logMessage("Join the conference with the options:");
             logMessage(JSON.stringify(joinOptions));
@@ -161,6 +167,8 @@ $("#conference-join-btn").click(function() {
                         .catch(err => logMessage(err));
                 })
                 .then(() => {
+                    $('#btn-set-webrtc-constraints').attr('disabled', false);
+
                     $('#chk-live-recording').attr('disabled', true);
                     $('#conference-join-btn').attr('disabled', true);
                     $('#conference-leave-btn').attr('disabled', false);
@@ -211,6 +219,8 @@ $("#conference-leave-btn").click(function() {
             $('#btn-set-input-audio-device').attr('disabled', true);
             $('#btn-set-video-device').attr('disabled', true);
             
+            $('#btn-set-webrtc-constraints').attr('disabled', true);
+            
             $("#conference-join-btn").attr('disabled', false);
             $("#conference-leave-btn").attr('disabled', true);
             $('#conference-alias-input').attr('readonly', false);
@@ -247,13 +257,14 @@ $("#btn-set-output-audio-device").click(async () => {
 
 
 const startVideo = () => {
-    const payloadConstraints = { constraints: webRtcConstraints };
+    const payloadConstraints = getConstraints();
     payloadConstraints.constraints.video.deviceId = $('#video-devices').val();
-    logMessage(`VoxeetSDK.conference.startVideo with ${JSON.stringify(payloadConstraints)}`);
+    logMessage("VoxeetSDK.conference.startVideo with the options:");
+    logMessage(JSON.stringify(payloadConstraints.constraints.video));
 
     // Start sharing the video with the other participants
     VoxeetSDK.conference
-        .startVideo(VoxeetSDK.session.participant, payloadConstraints)
+        .startVideo(VoxeetSDK.session.participant, payloadConstraints.constraints.video)
         .then(() => {
             $("#start-video-btn").attr('disabled', true);
             $("#stop-video-btn").attr('disabled', false);
