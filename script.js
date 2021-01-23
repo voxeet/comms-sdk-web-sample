@@ -5,13 +5,13 @@
 const consumerKey = "CONSUMER_KEY";
 const consumerSecret = "CONSUMER_SECRET";
 
-function logMessage(message) {
+const logMessage = (message) => {
     console.log(`${new Date().toISOString()} - ${message}`);
     $('#logs-area').val((_, text) => `${text}${new Date().toISOString()} - ${message}\r\n` );
 
     // Scroll to the end
     $('#logs-area').scrollTop($('#logs-area')[0].scrollHeight);
-}
+};
 
 var conferenceId;
 
@@ -27,14 +27,6 @@ const getConstraints = () => {
         video = { width: 1280, height: 720 };
     } else if (value === "1920") {
         video = { width: 1920, height: 1080 };
-    } else if (value === "ideal640") {
-        video = { width: { ideal: 640 }, height: { ideal: 360 } };
-    } else if (value === "ideal960") {
-        video = { width: { ideal: 960 }, height: { ideal: 540 } };
-    } else if (value === "ideal1280") {
-        video = { width: { ideal: 1280 }, height: { ideal: 720 } };
-    } else if (value === "ideal1920") {
-        video = { width: { ideal: 1920 }, height: { ideal: 1080 } };
     } else if (value === "min640") {
         video = { width: { min: 640 }, height: { min: 360 } };
     } else if (value === "min960") {
@@ -53,7 +45,7 @@ const getConstraints = () => {
     };
 };
 
-$("#btn-set-webrtc-constraints").click(function() {
+$("#btn-set-webrtc-constraints").click(() => {
     VoxeetSDK.session.participant.streams.forEach(stream => {
         if (stream.active && stream.type === "Camera") {
             logMessage("VoxeetSDK.conference.stopVideo");
@@ -68,7 +60,7 @@ $("#btn-set-webrtc-constraints").click(function() {
     });
 });
 
-$("#connect-btn").click(function() {
+$("#connect-btn").click(() => {
     const username = $('#username-input').val();
   
     // Open a session to the Dolby APIs
@@ -84,7 +76,7 @@ $("#connect-btn").click(function() {
       .catch((e) => logMessage(e));
 });
 
-$("#conference-join-btn").click(function() {
+$("#conference-join-btn").click(() => {
     const liveRecording = $('#chk-live-recording')[0].checked;
 
     // Default conference parameters
@@ -209,7 +201,7 @@ $("#conference-join-btn").click(function() {
       .catch((err) => logMessage(err));
 });
 
-$("#conference-leave-btn").click(function() {
+$("#conference-leave-btn").click(() => {
     // Leave the conference
     VoxeetSDK.conference.leave()
         .then(() => {
