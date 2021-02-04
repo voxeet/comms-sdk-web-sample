@@ -43,31 +43,32 @@ VoxeetSDK.conference.on('streamRemoved', (participant, stream) => {
 
 
 
-VoxeetSDK.videoPresentation.on("started", (vp) => {
+VoxeetSDK.videoPresentation.on('started', (vp) => {
     logMessage(`Event - videoPresentation started ${vp.url}`);
 
     addVideoPlayer(vp.url);
     $(`#stream-video video`)[0].currentTime = vp.timestamp;
 });
 
-VoxeetSDK.videoPresentation.on("paused", (vp) => {
-    logMessage('Event - videoPresentation paused');
+VoxeetSDK.videoPresentation.on('paused', (vp) => {
+    logMessage(`Event - videoPresentation paused at ${vp.timestamp}ms`);
 
     $(`#stream-video video`)[0].pause();
+    $(`#stream-video video`)[0].currentTime = vp.timestamp / 1000;
 });
 
-VoxeetSDK.videoPresentation.on("played", (vp) => {
+VoxeetSDK.videoPresentation.on('played', (vp) => {
     logMessage('Event - videoPresentation played');
 
     $(`#stream-video video`)[0].play();
 });
 
-VoxeetSDK.videoPresentation.on("sought", (vp) => {
-    logMessage('Event - videoPresentation sought');
-    $(`#stream-video video`)[0].currentTime = vp.timestamp;
+VoxeetSDK.videoPresentation.on('sought', (vp) => {
+    logMessage(`Event - videoPresentation sought to ${vp.timestamp}ms`);
+    $(`#stream-video video`)[0].currentTime = vp.timestamp / 1000;
 });
 
-VoxeetSDK.videoPresentation.on("stopped", () => {
+VoxeetSDK.videoPresentation.on('stopped', () => {
     logMessage('Event - videoPresentation stopped');
 
     $(`#stream-video`).remove();
@@ -76,6 +77,6 @@ VoxeetSDK.videoPresentation.on("stopped", () => {
 
 
 // When other participants send a command
-VoxeetSDK.command.on("received", (participant, messsage) => {
+VoxeetSDK.command.on('received', (participant, messsage) => {
     logMessage(`Event - command received from ${participant.info.name}: ${messsage}`);
 });

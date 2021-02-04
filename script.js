@@ -16,7 +16,7 @@ const logMessage = (message) => {
 var conferenceId;
 
 const getConstraints = () => {
-    let video = { width: 640, height: 480 };
+    let video = true;
 
     let value = $('#webrtc-constraints').val();
     if (value === "640") {
@@ -470,8 +470,8 @@ $("#video-stop-btn").click(() => {
 });
 
 $("#video-pause-btn").click(() => {
-    const timestamp = VoxeetSDK.videoPresentation.current.timestamp;
-    logMessage(`VoxeetSDK.videoPresentation.pause ${timestamp}`);
+    const timestamp = Math.round($(`#stream-video video`)[0].currentTime * 1000);
+    logMessage(`VoxeetSDK.videoPresentation.pause at ${timestamp}ms`);
     VoxeetSDK.videoPresentation
         .pause(timestamp)
         .then(() => {
