@@ -32,6 +32,7 @@ Here is the list of what you can do in this application:
 - Start and stop the recording
 - Start an RTMP stream
 - Send a message to the participants
+- Invite participants to join the conference
 
 ## Open Source Projects
 

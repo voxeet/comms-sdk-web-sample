@@ -195,6 +195,7 @@ $("#conference-join-btn").click(() => {
                     $("#stop-rtmp-btn").attr('disabled', true);
 
                     $('#send-message-btn').attr('disabled', false);
+                    $('#send-invitation-btn').attr('disabled', false);
                 })
                 .catch((err) => logMessage(err));
       })
@@ -593,6 +594,24 @@ $('#send-message-btn').click(() => {
         .send($("#message-input").val())
         .then(() => {
             $("#message-input").val();
+        })
+        .catch((err) => logMessage(err));
+});
+
+
+
+$('#send-invitation-btn').click(() => {
+    const externalId = $("#invite-input").val();
+    logMessage(`VoxeetSDK.command.invite('${externalId}')`);
+
+    var participants = [
+        { externalId: externalId }
+    ];
+
+    VoxeetSDK.conference
+        .invite(VoxeetSDK.conference.current, participants)
+        .then(() => {
+            logMessage(`Invitation sent to ${externalId}`);
         })
         .catch((err) => logMessage(err));
 });
