@@ -61,16 +61,21 @@ $("#btn-set-webrtc-constraints").click(() => {
 });
 
 $("#connect-btn").click(() => {
+    const externalId = $('#external-id-input').val();
     const username = $('#username-input').val();
+    const avatarUrl = $('#avatar-url-input').val();
   
     // Open a session to the Dolby APIs
-    VoxeetSDK.session.open({ name: username })
+    VoxeetSDK.session.open({ name: username, externalId: externalId, avatarUrl: avatarUrl })
       .then(() => {
         // Update the login message with the name of the user
         $('#title').text(`You are connected as ${username}`);
         $('#conference-join-btn').attr('disabled', false);
+        $('#conference-listen-btn').attr('disabled', false);
         $('#connect-btn').attr('disabled', true);
+        $('#external-id-input').attr('readonly', true);
         $('#username-input').attr('readonly', true);
+        $('#avatar-url-input').attr('readonly', true);
       })
       .then(() => logMessage(`You are connected as ${username}`))
       .catch((e) => logMessage(e));
@@ -78,6 +83,7 @@ $("#connect-btn").click(() => {
 
 $("#conference-join-btn").click(() => {
     const liveRecording = $('#chk-live-recording')[0].checked;
+    const dolbyVoice = $('#chk-dolby-voice')[0].checked;
 
     // Default conference parameters
     // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceparameters
@@ -86,7 +92,7 @@ $("#conference-join-btn").click(() => {
         rtcpMode: "average", // worst, average, max
         ttl: 0,
         videoCodec: "H264", // H264, VP8
-        dolbyVoice: true
+        dolbyVoice: dolbyVoice
     };
 
     // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceoptions
@@ -163,6 +169,7 @@ $("#conference-join-btn").click(() => {
 
                     $('#chk-live-recording').attr('disabled', true);
                     $('#conference-join-btn').attr('disabled', true);
+                    $('#conference-listen-btn').attr('disabled', true);
                     $('#conference-leave-btn').attr('disabled', false);
                     $('#conference-alias-input').attr('readonly', true);
 
@@ -202,7 +209,96 @@ $("#conference-join-btn").click(() => {
       .catch((err) => logMessage(err));
 });
 
-$("#conference-leave-btn").click(() => {
+$("#conference-listen-btn").click(function() {
+    const liveRecording = $('#chk-live-recording')[0].checked;
+    const dolbyVoice = $('#chk-dolby-voice')[0].checked;
+
+    // Default conference parameters
+    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceparameters
+    let conferenceParams = {
+        liveRecording: liveRecording,
+        rtcpMode: "average", // worst, average, max
+        ttl: 0,
+        videoCodec: "H264", // H264, VP8
+        dolbyVoice: dolbyVoice
+    };
+
+    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceoptions
+    let conferenceOptions = {
+        alias: $('#conference-alias-input').val(),
+        params: conferenceParams
+    };
+
+    // 1. Create a conference room with an alias
+    VoxeetSDK.conference.create(conferenceOptions)
+        .then((conference) => {
+            logMessage(`Conference id: ${conference.id} & Conference alias ${conference.alias}`);
+            conferenceId = conference.id;
+
+            // 2. Join the conference
+            VoxeetSDK.conference.listen(conference)
+                .then(() => {
+                    // Load the Output Audio devices
+                    VoxeetSDK.mediaDevice.enumerateAudioDevices("output")
+                        .then(devices => {
+                            console.log("Output Audio Devices");
+                            console.log(devices);
+                            $('#output-audio-devices').empty();
+
+                            devices.forEach(device => {
+                                $('#output-audio-devices').append(new Option(device.label, device.deviceId));
+                            });
+
+                            $('#btn-set-output-audio-device').attr('disabled', false);
+                        })
+                        .catch(err => logMessage(err));
+                })
+                .then(() => {
+                    $('#btn-set-webrtc-constraints').attr('disabled', false);
+
+                    $('#chk-live-recording').attr('disabled', true);
+                    $('#conference-join-btn').attr('disabled', true);
+                    $('#conference-listen-btn').attr('disabled', true);
+                    $('#conference-leave-btn').attr('disabled', false);
+                    $('#conference-alias-input').attr('readonly', true);
+
+                    $('#start-video-btn').attr('disabled', true);
+                    $('#stop-video-btn').attr('disabled', true);
+
+                    $('#start-audio-btn').attr('disabled', true);
+                    $('#stop-audio-btn').attr('disabled', true);
+                    $('#mute-audio-btn').attr('disabled', true);
+                    $('#unmute-audio-btn').attr('disabled', true);
+
+                    $('#start-screenshare-btn').attr('disabled', true);
+                    $('#stop-screenshare-btn').attr('disabled', true);
+
+                    $('#video-url-input').attr('readonly', true);
+                    $("#video-start-btn").attr('disabled', true);
+                    $("#video-stop-btn").attr('disabled', true);
+                    $("#video-pause-btn").attr('disabled', true);
+                    $("#video-play-btn").attr('disabled', true);
+
+                    $("#start-recording-btn").attr('disabled', true);
+                    $("#stop-recording-btn").attr('disabled', true);
+                    $('#recording-status')
+                        .removeClass('fa-circle').addClass('fa-stop-circle')
+                        .removeClass('red').addClass('gray');
+
+                    $('#rtmp-status').removeClass('red').addClass('gray');
+                    $("#rtmp-url-input").attr('readonly', false);
+                    $("#start-rtmp-btn").attr('disabled', true);
+                    $("#stop-rtmp-btn").attr('disabled', true);
+
+                    $('#send-message-btn').attr('disabled', false);
+                    $('#send-invitation-btn').attr('disabled', false);
+                })
+                .catch((err) => logMessage(err));
+      })
+      .catch((err) => logMessage(err));
+});
+
+$("#conference-leave-btn").click(function() {
     // Leave the conference
     VoxeetSDK.conference.leave()
         .then(() => {
@@ -213,8 +309,9 @@ $("#conference-leave-btn").click(() => {
             $('#btn-set-video-device').attr('disabled', true);
             
             $('#btn-set-webrtc-constraints').attr('disabled', true);
-            
+
             $("#conference-join-btn").attr('disabled', false);
+            $("#conference-listen-btn").attr('disabled', false);
             $("#conference-leave-btn").attr('disabled', true);
             $('#conference-alias-input').attr('readonly', false);
 
@@ -246,7 +343,6 @@ $("#btn-set-input-audio-device").click(async () => {
 $("#btn-set-output-audio-device").click(async () => {
     await VoxeetSDK.mediaDevice.selectAudioOutput($('#output-audio-devices').val());
 });
-
 
 
 const startVideo = () => {
@@ -300,7 +396,7 @@ const addVideoNode = (participant, stream) => {
     let video = element.find('video')[0];
     navigator.attachMediaStream(video, stream);
 };
-  
+
 const updateVideoMessage = (participant, stream) => {
     let element = $(`#stream-${participant.id}`);
     if (element.length) {
@@ -623,14 +719,16 @@ $(function() {
     VoxeetSDK.initialize(consumerKey, consumerSecret);
     logMessage("The Voxeet SDK has been initialized");
 
-     // Generate a random username
-    let randomUsername = "Guest " + Math.round(Math.random() * 10000);
-    $('#username-input').val(randomUsername);
+    // Generate a random username
+    let rand = Math.round(Math.random() * 10000);
+    $('#external-id-input').val(`guest-${rand}`);
+    $('#username-input').val(`Guest ${rand}`);
+    $('#avatar-url-input').val(`https://gravatar.com/avatar/${rand}?s=200&d=identicon`);
 
     // Generate a random conference alias
     let conferenceAlias = "conf-" + Math.round(Math.random() * 10000);
     $('#conference-alias-input').val(conferenceAlias);
-    
+
     // Set the Voxeet SDK Version
     $('#sdk-version').text(VoxeetSDK.version);
 

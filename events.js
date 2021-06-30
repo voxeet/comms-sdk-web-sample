@@ -77,6 +77,6 @@ VoxeetSDK.videoPresentation.on('stopped', () => {
 
 
 // When other participants send a command
-VoxeetSDK.command.on('received', (participant, messsage) => {
-    logMessage(`Event - command received from ${participant.info.name}: ${messsage}`);
+VoxeetSDK.command.on('received', (participant, message) => {
+    logMessage(`Event - command received from ${participant.info.name}: ${message}`);
 });

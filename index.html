@@ -17,7 +17,7 @@
         href="styles.css">
 
     <script type="text/javascript"
-        src="https://unpkg.com/@voxeet/voxeet-web-sdk@3.0"></script>
+        src="https://unpkg.com/@voxeet/voxeet-web-sdk"></script>
 </head>
 <body>
     <header>
@@ -64,14 +64,16 @@
             </div>
 
             <div class="form-group row">
-                <label for="username-input" class="col-sm-3 col-form-label">Your name:</label>
+                <label for="username-input" class="col-sm-3 col-form-label">About you:</label>
                 <div class="col-sm-9">
-                <div class="input-group input-group-sm">
-                    <input id="username-input" type="text" class="form-control" placeholder="Your name">
-                    <div class="input-group-append">
-                        <button id="connect-btn" class="btn btn-primary" type="button">Connect</button>
+                    <div class="input-group input-group-sm">
+                        <input id="external-id-input" type="text" class="form-control" placeholder="External ID" title="External ID">
+                        <input id="username-input" type="text" class="form-control" placeholder="Your name" title="Your name">
+                        <input id="avatar-url-input" type="text" class="form-control" placeholder="Avatar URL" title="Avatar URL">
+                        <div class="input-group-append">
+                            <button id="connect-btn" class="btn btn-primary" type="button">Connect</button>
+                        </div>
                     </div>
-                  </div>
                 </div>
             </div>
 
@@ -84,11 +86,18 @@
                         <div class="input-group-text">
                             <input id="chk-live-recording" type="checkbox">
                         </div>
-                        <span class="input-group-text">Live recording</span>
+                        <label class="input-group-text" for="chk-live-recording" style="border-left: none; padding-left: 0;">Live recording</label>
+                    </div>
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input id="chk-dolby-voice" type="checkbox" checked>
+                        </div>
+                        <label class="input-group-text" for="chk-dolby-voice" style="border-left: none; padding-left: 0;">Dolby Voice</label>
                     </div>
                     <input id="conference-alias-input" type="text" class="form-control" placeholder="Conference alias">
                     <div class="input-group-append">
                         <button id="conference-join-btn" class="btn btn-primary" type="button" disabled>Join</button>
+                        <button id="conference-listen-btn" class="btn btn-primary" type="button" disabled>Listen</button>
                         <button id="conference-leave-btn" class="btn btn-danger" type="button" disabled>Leave</button>
                     </div>
                   </div>
