@@ -698,13 +698,13 @@ $('#send-message-btn').click(() => {
 
 $('#send-invitation-btn').click(() => {
     const externalId = $("#invite-input").val();
-    logMessage(`VoxeetSDK.command.invite('${externalId}')`);
+    logMessage(`VoxeetSDK.notification.invite('${externalId}')`);
 
     var participants = [
         { externalId: externalId }
     ];
 
-    VoxeetSDK.conference
+    VoxeetSDK.notification
         .invite(VoxeetSDK.conference.current, participants)
         .then(() => {
             logMessage(`Invitation sent to ${externalId}`);
