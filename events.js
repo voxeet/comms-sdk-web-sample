@@ -10,8 +10,6 @@ VoxeetSDK.conference.on('streamAdded', (participant, stream) => {
         // Only add the video node if there is a video track
         addVideoNode(participant, stream);
     }
-    
-    addParticipantNode(participant);
 });
 
 // When a video stream is updated from the conference´
@@ -39,6 +37,24 @@ VoxeetSDK.conference.on('streamRemoved', (participant, stream) => {
 
     removeVideoNode(participant);
     removeParticipantNode(participant);
+});
+
+
+VoxeetSDK.conference.on('participantAdded', (participant) => {
+    logMessage(`Event - participantAdded from ${participant.info.name} (${participant.id})`);
+    addParticipantNode(participant);
+});
+VoxeetSDK.conference.on('participantUpdated', (participant) => {
+    logMessage(`Event - participantUpdated from ${participant.info.name} (${participant.id}) - Status: ${participant.status}`);
+
+    if (participant.status === 'Decline' ||
+        participant.status === 'Error' ||
+        participant.status === 'Kicked' ||
+        participant.status === 'Left') {
+        removeParticipantNode(participant);
+    } else {
+        addParticipantNode(participant);
+    }
 });
 
 

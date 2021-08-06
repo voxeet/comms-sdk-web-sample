@@ -1,7 +1,7 @@
 // Set the consumerKey and consumerSecret variables
 // WARNING: It is best practice to use the VoxeetSDK.initializeToken function to initialize the SDK.
 // Please read the documentation at:
-// https://dolby.io/developers/interactivity-apis/client-sdk/initializing
+// https://docs.dolby.io/interactivity/docs/initializing
 const consumerKey = "CONSUMER_KEY";
 const consumerSecret = "CONSUMER_SECRET";
 
@@ -25,16 +25,12 @@ const getConstraints = () => {
         video = { width: 960, height: 540 };
     } else if (value === "1280") {
         video = { width: 1280, height: 720 };
-    } else if (value === "1920") {
-        video = { width: 1920, height: 1080 };
     } else if (value === "min640") {
         video = { width: { min: 640 }, height: { min: 360 } };
     } else if (value === "min960") {
         video = { width: { min: 960 }, height: { min: 540 } };
     } else if (value === "min1280") {
         video = { width: { min: 1280 }, height: { min: 720 } };
-    } else if (value === "min1920") {
-        video = { width: { min: 1920 }, height: { min: 1080 } };
     }
 
     return {
@@ -86,7 +82,7 @@ $("#conference-join-btn").click(() => {
     const dolbyVoice = $('#chk-dolby-voice')[0].checked;
 
     // Default conference parameters
-    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceparameters
+    // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceparameters
     let conferenceParams = {
         liveRecording: liveRecording,
         rtcpMode: "average", // worst, average, max
@@ -95,7 +91,7 @@ $("#conference-join-btn").click(() => {
         dolbyVoice: dolbyVoice
     };
 
-    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceoptions
+    // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceoptions
     let conferenceOptions = {
         alias: $('#conference-alias-input').val(),
         params: conferenceParams
@@ -107,7 +103,7 @@ $("#conference-join-btn").click(() => {
             logMessage(`Conference id: ${conference.id} & Conference alias ${conference.alias}`);
             conferenceId = conference.id;
 
-            // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/joinoptions
+            // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-joinoptions
             const joinOptions = getConstraints();
             joinOptions.simulcast = false;
 
@@ -115,7 +111,7 @@ $("#conference-join-btn").click(() => {
             logMessage(JSON.stringify(joinOptions));
 
             // 2. Join the conference
-            VoxeetSDK.conference.join(conference, joinOptions)
+            return VoxeetSDK.conference.join(conference, joinOptions)
                 .then(() => {
                     // Load the Output Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("output")
@@ -131,8 +127,7 @@ $("#conference-join-btn").click(() => {
                             $('#btn-set-output-audio-device').attr('disabled', false);
                         })
                         .catch(err => logMessage(err));
-                })
-                .then(() => {
+
                     // Load the Input Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("input")
                         .then(devices => {
@@ -147,8 +142,7 @@ $("#conference-join-btn").click(() => {
                             $('#btn-set-input-audio-device').attr('disabled', false);
                         })
                         .catch(err => logMessage(err));
-                })
-                .then(() => {
+
                     // Load the Video devices
                     VoxeetSDK.mediaDevice.enumerateVideoDevices("input")
                         .then(devices => {
@@ -203,8 +197,9 @@ $("#conference-join-btn").click(() => {
 
                     $('#send-message-btn').attr('disabled', false);
                     $('#send-invitation-btn').attr('disabled', false);
-                })
-                .catch((err) => logMessage(err));
+
+                    setRecordingState(VoxeetSDK.recording.current != null);
+                });
       })
       .catch((err) => logMessage(err));
 });
@@ -214,7 +209,7 @@ $("#conference-listen-btn").click(function() {
     const dolbyVoice = $('#chk-dolby-voice')[0].checked;
 
     // Default conference parameters
-    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceparameters
+    // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceparameters
     let conferenceParams = {
         liveRecording: liveRecording,
         rtcpMode: "average", // worst, average, max
@@ -223,7 +218,7 @@ $("#conference-listen-btn").click(function() {
         dolbyVoice: dolbyVoice
     };
 
-    // See: https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/model/conferenceoptions
+    // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceoptions
     let conferenceOptions = {
         alias: $('#conference-alias-input').val(),
         params: conferenceParams
@@ -236,7 +231,7 @@ $("#conference-listen-btn").click(function() {
             conferenceId = conference.id;
 
             // 2. Join the conference
-            VoxeetSDK.conference.listen(conference)
+            return VoxeetSDK.conference.listen(conference)
                 .then(() => {
                     // Load the Output Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("output")
@@ -292,8 +287,9 @@ $("#conference-listen-btn").click(function() {
 
                     $('#send-message-btn').attr('disabled', false);
                     $('#send-invitation-btn').attr('disabled', false);
-                })
-                .catch((err) => logMessage(err));
+
+                    setRecordingState(VoxeetSDK.recording.current != null);
+                });
       })
       .catch((err) => logMessage(err));
 });
@@ -424,7 +420,7 @@ $("#start-audio-btn").click(() => {
 
     // Start sharing the audio with the other participants
     VoxeetSDK.conference.startAudio(VoxeetSDK.session.participant)
-        .then(() => VoxeetSDK.mediaDevice.selectAudioInput($('#input-audio-devices').val()).then(() => {}))
+        .then(() => VoxeetSDK.mediaDevice.selectAudioInput($('#input-audio-devices').val()))
         .then(() => {
             $("#start-audio-btn").attr('disabled', true);
             $("#stop-audio-btn").attr('disabled', false);
@@ -522,11 +518,16 @@ const removeScreenShareNode = () => {
 const addParticipantNode = (participant) => {
     // If the participant is the current session user, don't add himself to the list
     if (participant.id === VoxeetSDK.session.participant.id) return;
-  
-    $('<li />')
-        .attr('id', `participant-${participant.id}`)
-        .text(participant.info.name)
-        .appendTo('#participants-list');
+
+    let elem = $(`#participant-${participant.id}`);
+    console.log(elem, participant);
+    if (!elem.length) {
+        elem = $('<li />')
+            .attr('id', `participant-${participant.id}`)
+            .appendTo('#participants-list');
+    }
+
+    elem.text(`${participant.info.name} - ${participant.status}`);
 };
 
 // Remove a participant from the list
@@ -604,20 +605,31 @@ const addVideoPlayer = (videoUrl) => {
 };
 
 
+/**
+ * RECORDING
+ */
+
+const setRecordingState = (isRecording) => {
+    if (isRecording) {
+        $('#recording-status')
+            .removeClass('fa-stop-circle').addClass('fa-circle')
+            .removeClass('gray').addClass('red');
+    } else {
+        $('#recording-status')
+            .removeClass('fa-circle').addClass('fa-stop-circle')
+            .removeClass('red').addClass('gray');
+    }
+
+    $("#start-recording-btn").attr('disabled', isRecording);
+    $("#stop-recording-btn").attr('disabled', !isRecording);
+};
 
 $("#start-recording-btn").click(() => {
     logMessage('VoxeetSDK.recording.start()');
 
     // Start recording the conference
     VoxeetSDK.recording.start()
-        .then(() => {
-            $('#recording-status')
-                .removeClass('fa-stop-circle').addClass('fa-circle')
-                .removeClass('gray').addClass('red');
-
-            $("#start-recording-btn").attr('disabled', true);
-            $("#stop-recording-btn").attr('disabled', false);
-        })
+        .then(() => setRecordingState(true))
         .catch((err) => logMessage(err));
 });
 
@@ -626,62 +638,89 @@ $("#stop-recording-btn").click(() => {
     
     // Stop recording the conference
     VoxeetSDK.recording.stop()
-        .then(() => {
-            $('#recording-status')
-                .removeClass('fa-circle').addClass('fa-stop-circle')
-                .removeClass('red').addClass('gray');
-
-            $("#start-recording-btn").attr('disabled', false);
-            $("#stop-recording-btn").attr('disabled', true);
-        })
+        .then(() => setRecordingState(false))
         .catch((err) => logMessage(err));
 });
 
 
+/**
+ * RTMP Streaming
+ */
 
-$("#start-rtmp-btn").click(() => {
+const getAccessToken = () => {
+    return new Promise((resolve, reject) => {
+        const authUrl = `https://api.voxeet.com/v1/auth/token`;
+        $.ajax({
+            async : true,
+            type: "POST",
+            url: authUrl,
+            contentType: "application/x-www-form-urlencoded",
+            data: "grant_type=client_credentials",
+            headers: {
+                "Authorization": "Basic: " + btoa(`${consumerKey}:${consumerSecret}`),
+            }
+        }).done(function (data) {
+            resolve(data);
+        }).fail(function (err) {
+            reject(err);
+        });
+    })
+};
+
+$("#start-rtmp-btn").click(async () => {
     const rtmpUrl = $('#rtmp-url-input').val();
     logMessage(`Start RTMP stream to ${rtmpUrl}`);
 
-    const url = `https://session.voxeet.com/v1/api/conferences/mix/${conferenceId}/live/start`;
+    const jwt = await getAccessToken();
+
+    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/start`;
     $.ajax({
+        async : true,
         type: "POST",
         url: url,
         contentType: "application/json",
         dataType: 'json',
         data: JSON.stringify({ uri: rtmpUrl }),
         headers: {
-            "Authorization": "Basic: " + btoa(`${consumerKey}:${consumerSecret}`),
-            "Content-type": "application/json"
+            "Authorization": "Bearer " + jwt.access_token
         }
+    }).done(function () {
+        $('#rtmp-status').addClass('red').removeClass('gray');
+        $("#rtmp-url-input").attr('readonly', true);
+        $("#start-rtmp-btn").attr('disabled', true);
+        $("#stop-rtmp-btn").attr('disabled', false);
+    }).fail(function (err) {
+        logMessage(err);
     });
-
-    $('#rtmp-status').addClass('red').removeClass('gray');
-    $("#rtmp-url-input").attr('readonly', true);
-    $("#start-rtmp-btn").attr('disabled', true);
-    $("#stop-rtmp-btn").attr('disabled', false);
 });
 
-$("#stop-rtmp-btn").click(() => {
+$("#stop-rtmp-btn").click(async () => {
     logMessage('Stop the RTMP stream');
 
-    const url = `https://session.voxeet.com/v1/api/conferences/mix/${conferenceId}/live/stop`;
+    const jwt = await getAccessToken();
+
+    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/stop`;
     $.ajax({
+        async : true,
         type: "POST",
         url: url,
         headers: {
-            "Authorization": "Basic: " + btoa(`${consumerKey}:${consumerSecret}`),
-            "Content-type": "application/json"
+            "Authorization": "Bearer " + jwt.access_token
         }
+    }).done(function () {
+        $('#rtmp-status').removeClass('red').addClass('gray');
+        $("#rtmp-url-input").attr('readonly', false);
+        $("#start-rtmp-btn").attr('disabled', false);
+        $("#stop-rtmp-btn").attr('disabled', true);
+    }).fail(function (err) {
+        logMessage(err);
     });
-
-    $('#rtmp-status').removeClass('red').addClass('gray');
-    $("#rtmp-url-input").attr('readonly', false);
-    $("#start-rtmp-btn").attr('disabled', false);
-    $("#stop-rtmp-btn").attr('disabled', true);
 });
 
 
+/**
+ * Send a message
+ */
 
 $('#send-message-btn').click(() => {
     logMessage('VoxeetSDK.command.send()');
@@ -695,6 +734,9 @@ $('#send-message-btn').click(() => {
 });
 
 
+/**
+ * Send invitation
+ */
 
 $('#send-invitation-btn').click(() => {
     const externalId = $("#invite-input").val();

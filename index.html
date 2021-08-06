@@ -6,12 +6,14 @@
     <title>Dolby.io Web SDK Sample Application</title>
 
     <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
-        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
-        crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css"
-        integrity="sha256-rx5u3IdaOCszi7Jb18XD9HSn8bNiEgAqWJbdBvIYYyU="
-        crossorigin="anonymous">
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css"
+        integrity="sha512-P5MgMn1jBN01asBgU0z60Qk4QxiXo86+wlFahKrsQf37c9cro517WzVSPPV1tDKzhku2iJ2FVgL67wG03SGnNA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
 
     <link rel="stylesheet"
         href="styles.css">
@@ -50,11 +52,9 @@
                         <option value="640">Resolution 640 x 360</option>
                         <option value="960">Resolution 960 x 540</option>
                         <option value="1280">Resolution 1280 x 720</option>
-                        <option value="1920">Resolution 1920 x 1080</option>
                         <option value="min640">Minimum Resolution 640 x 360</option>
                         <option value="min960">Minimum Resolution 960 x 540</option>
                         <option value="min1280">Minimum Resolution 1280 x 720</option>
-                        <option value="min1920">Minimum Resolution 1920 x 1080</option>
                     </select>
                     <div class="input-group-append">
                         <button id="btn-set-webrtc-constraints" class="btn btn-secondary" type="button" disabled>Set</button>
@@ -268,7 +268,7 @@
         <!-- Display the list of participants -->
         <div class="bg-light">
             <div class="container">
-                <h2 class="title">Participants</h2>
+                <h2 class="title">Remote participants</h2>
                 <ul id="participants-list"></ul>
             </div>
         </div>
@@ -336,15 +336,18 @@
         </div>
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsrender@1.0.9/jsrender.min.js"
-        integrity="sha256-YWVxSjBTTGAEMwlQBTbW+BhYVYAltr+iYqrqVdoYWDQ="
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"
+        integrity="sha512-wV7Yj1alIZDqZFCUQJy85VN+qvEIly93fIQAN7iqDFCPEucLCeNFz4r35FCo9s6WrpdDQPi80xbljXB8Bjtvcg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js"
+        integrity="sha512-bKlNlbTH3duwZ28zoqEhXui/yuaPuQVci6OAVu0zh2WfYbEKD39HszVR8byP4/L4YyBo3b5CGIY+4ldVN93uCg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
     <script type="text/javascript" src="script.js"></script>
     <script type="text/javascript" src="events.js"></script>
 </body>

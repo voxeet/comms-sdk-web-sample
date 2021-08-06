@@ -15,11 +15,11 @@ const consumerSecret = "CONSUMER_SECRET";
 
 > WARNING: It is best practice to use the VoxeetSDK.initializeToken function to initialize the SDK.
 > Please read the documentation at:
-> https://dolby.io/developers/interactivity-apis/client-sdk/initializing
+> https://docs.dolby.io/interactivity/docs/initializing
 
 Now, simply open the file `index.html` in your web browser and start playing with the application.
 
-> Make sure to read the [JavaScript documentation](https://dolby.io/developers/interactivity-apis/client-sdk/reference-javascript/voxeetsdk) for the SDK.
+> Make sure to read the [JavaScript documentation](https://docs.dolby.io/interactivity/docs/js-client-sdk-voxeetsdk) for the SDK.
 
 ## Features
 Here is the list of what you can do in this application:
