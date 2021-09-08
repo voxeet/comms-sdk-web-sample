@@ -36,13 +36,12 @@ VoxeetSDK.conference.on('streamRemoved', (participant, stream) => {
     }
 
     removeVideoNode(participant);
-    removeParticipantNode(participant);
 });
 
 
 VoxeetSDK.conference.on('participantAdded', (participant) => {
     logMessage(`Event - participantAdded from ${participant.info.name} (${participant.id})`);
-    addParticipantNode(participant);
+    addUpdateParticipantNode(participant);
 });
 VoxeetSDK.conference.on('participantUpdated', (participant) => {
     logMessage(`Event - participantUpdated from ${participant.info.name} (${participant.id}) - Status: ${participant.status}`);
@@ -53,10 +52,9 @@ VoxeetSDK.conference.on('participantUpdated', (participant) => {
         participant.status === 'Left') {
         removeParticipantNode(participant);
     } else {
-        addParticipantNode(participant);
+        addUpdateParticipantNode(participant);
     }
 });
-
 
 
 VoxeetSDK.videoPresentation.on('started', (vp) => {
@@ -81,6 +79,7 @@ VoxeetSDK.videoPresentation.on('played', (vp) => {
 
 VoxeetSDK.videoPresentation.on('sought', (vp) => {
     logMessage(`Event - videoPresentation sought to ${vp.timestamp}ms`);
+
     $(`#stream-video video`)[0].currentTime = vp.timestamp / 1000;
 });
 
@@ -90,7 +89,13 @@ VoxeetSDK.videoPresentation.on('stopped', () => {
     $(`#stream-video`).remove();
 });
 
+// Invitation to join a conference received
+VoxeetSDK.notification.on("invitation", (invite) => {
+    logMessage(`Event - invitation to join the conference ${invite.conferenceAlias} (${invite.conferenceId}) received from ${invite.participant.info.name}`);
 
+    $('#conference-alias-input').val(invite.conferenceAlias);
+    conferenceAccessToken = invite.conferenceAccessToken;
+});
 
 // When other participants send a command
 VoxeetSDK.command.on('received', (participant, message) => {

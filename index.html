@@ -268,7 +268,7 @@
         <!-- Display the list of participants -->
         <div class="bg-light">
             <div class="container">
-                <h2 class="title">Remote participants</h2>
+                <h2 class="title">Participants</h2>
                 <ul id="participants-list"></ul>
             </div>
         </div>
@@ -300,6 +300,13 @@
             <p>Powered by <a href="https://www.dolby.io">Dolby.io</a>. SDK Version <span id="sdk-version">0.0.0</span>. <a href="https://github.com/FabienLavocat/dolbyio-web-sdk-sample" target="_blank">GitHub repo</a></p>
         </div>
     </footer>
+
+    <script id="template-participant" type="text/x-jsrender">
+        <li id="participant-{{:id}}">
+            <img class="participant-avatar" src="{{:avatarUrl}}" />
+            <span>{{:name}} - {{:status}}{{if isLocal}} - [local session]{{/if}}</span>
+        </li>
+    </script>
 
     <script id="template-video" type="text/x-jsrender">
         <div id="stream-{{:id}}" class="col-md-4">

@@ -28,3 +28,8 @@ footer {
 .card video {
     background-color: black;
 }
+
+.participant-avatar {
+    height: 25px;
+    width: 25px;
+}

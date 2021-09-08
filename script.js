@@ -13,7 +13,16 @@ const logMessage = (message) => {
     $('#logs-area').scrollTop($('#logs-area')[0].scrollHeight);
 };
 
+const logError = (message) => {
+    console.error(`${new Date().toISOString()} - ${message}`);
+    $('#logs-area').val((_, text) => `${text}${new Date().toISOString()} - ${message}\r\n` );
+
+    // Scroll to the end
+    $('#logs-area').scrollTop($('#logs-area')[0].scrollHeight);
+};
+
 var conferenceId;
+var conferenceAccessToken;
 
 const getConstraints = () => {
     let video = true;
@@ -50,7 +59,7 @@ $("#btn-set-webrtc-constraints").click(() => {
             VoxeetSDK.conference
                 .stopVideo(VoxeetSDK.session.participant)
                 .then(startVideo)
-                .catch((err) => logMessage(err));
+                .catch((err) => logError(err));
             return;
         }
     });
@@ -62,19 +71,20 @@ $("#connect-btn").click(() => {
     const avatarUrl = $('#avatar-url-input').val();
   
     // Open a session to the Dolby APIs
-    VoxeetSDK.session.open({ name: username, externalId: externalId, avatarUrl: avatarUrl })
-      .then(() => {
-        // Update the login message with the name of the user
-        $('#title').text(`You are connected as ${username}`);
-        $('#conference-join-btn').attr('disabled', false);
-        $('#conference-listen-btn').attr('disabled', false);
-        $('#connect-btn').attr('disabled', true);
-        $('#external-id-input').attr('readonly', true);
-        $('#username-input').attr('readonly', true);
-        $('#avatar-url-input').attr('readonly', true);
-      })
-      .then(() => logMessage(`You are connected as ${username}`))
-      .catch((e) => logMessage(e));
+    VoxeetSDK.session
+        .open({ name: username, externalId: externalId, avatarUrl: avatarUrl })
+        .then(() => {
+            // Update the login message with the name of the user
+            $('#title').text(`You are connected as ${username}`);
+            $('#conference-join-btn').attr('disabled', false);
+            $('#conference-listen-btn').attr('disabled', false);
+            $('#connect-btn').attr('disabled', true);
+            $('#external-id-input').attr('readonly', true);
+            $('#username-input').attr('readonly', true);
+            $('#avatar-url-input').attr('readonly', true);
+        })
+        .then(() => logMessage(`You are connected as ${username}`))
+        .catch((e) => logError(e));
 });
 
 $("#conference-join-btn").click(() => {
@@ -106,6 +116,9 @@ $("#conference-join-btn").click(() => {
             // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-joinoptions
             const joinOptions = getConstraints();
             joinOptions.simulcast = false;
+            if (conferenceAccessToken) {
+                joinOptions.conferenceAccessToken = conferenceAccessToken;
+            }
 
             logMessage("Join the conference with the options:");
             logMessage(JSON.stringify(joinOptions));
@@ -126,7 +139,7 @@ $("#conference-join-btn").click(() => {
 
                             $('#btn-set-output-audio-device').attr('disabled', false);
                         })
-                        .catch(err => logMessage(err));
+                        .catch(err => logError(err));
 
                     // Load the Input Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("input")
@@ -141,7 +154,7 @@ $("#conference-join-btn").click(() => {
 
                             $('#btn-set-input-audio-device').attr('disabled', false);
                         })
-                        .catch(err => logMessage(err));
+                        .catch(err => logError(err));
 
                     // Load the Video devices
                     VoxeetSDK.mediaDevice.enumerateVideoDevices("input")
@@ -156,7 +169,7 @@ $("#conference-join-btn").click(() => {
 
                             $('#btn-set-video-device').attr('disabled', false);
                         })
-                        .catch(err => logMessage(err));
+                        .catch(err => logError(err));
                 })
                 .then(() => {
                     $('#btn-set-webrtc-constraints').attr('disabled', false);
@@ -201,7 +214,7 @@ $("#conference-join-btn").click(() => {
                     setRecordingState(VoxeetSDK.recording.current != null);
                 });
       })
-      .catch((err) => logMessage(err));
+      .catch((err) => logError(err));
 });
 
 $("#conference-listen-btn").click(function() {
@@ -230,8 +243,13 @@ $("#conference-listen-btn").click(function() {
             logMessage(`Conference id: ${conference.id} & Conference alias ${conference.alias}`);
             conferenceId = conference.id;
 
+            let listenOptions = {};
+            if (conferenceAccessToken) {
+                listenOptions.conferenceAccessToken = conferenceAccessToken;
+            }
+
             // 2. Join the conference
-            return VoxeetSDK.conference.listen(conference)
+            return VoxeetSDK.conference.listen(conference, listenOptions)
                 .then(() => {
                     // Load the Output Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("output")
@@ -246,7 +264,7 @@ $("#conference-listen-btn").click(function() {
 
                             $('#btn-set-output-audio-device').attr('disabled', false);
                         })
-                        .catch(err => logMessage(err));
+                        .catch(err => logError(err));
                 })
                 .then(() => {
                     $('#btn-set-webrtc-constraints').attr('disabled', false);
@@ -298,6 +316,8 @@ $("#conference-leave-btn").click(function() {
     // Leave the conference
     VoxeetSDK.conference.leave()
         .then(() => {
+            conferenceAccessToken = null;
+
             $('#chk-live-recording').attr('disabled', false);
 
             $('#btn-set-output-audio-device').attr('disabled', true);
@@ -324,8 +344,10 @@ $("#conference-leave-btn").click(function() {
 
             // Empty the last video elements
             $('#streams-containers').empty();
+            // Empty the list of participants
+            $('#participants-list').empty();
         })
-        .catch((e) => logMessage(e));
+        .catch((e) => logError(e));
 });
 
 $("#btn-set-video-device").click(async () => {
@@ -354,7 +376,7 @@ const startVideo = () => {
             $("#start-video-btn").attr('disabled', true);
             $("#stop-video-btn").attr('disabled', false);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 };
 
 $("#start-video-btn").click(startVideo);
@@ -368,7 +390,7 @@ $("#stop-video-btn").click(() => {
             $("#start-video-btn").attr('disabled', false);
             $("#stop-video-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 // Add a video stream to the web page
@@ -410,6 +432,7 @@ const updateVideoMessage = (participant, stream) => {
   
 // Remove the video stream from the web page
 const removeVideoNode = (participant) => {
+    $(`#stream-${participant.id} video`)[0].srcObject = null; // Prevent memory leak in Chrome
     $(`#stream-${participant.id}`).remove();
 };
 
@@ -427,7 +450,7 @@ $("#start-audio-btn").click(() => {
             $("#mute-audio-btn").attr('disabled', false);
             $("#unmute-audio-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#stop-audio-btn").click(() => {
@@ -441,7 +464,7 @@ $("#stop-audio-btn").click(() => {
             $("#mute-audio-btn").attr('disabled', true);
             $("#unmute-audio-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#mute-audio-btn").click(() => {
@@ -471,7 +494,7 @@ $("#start-screenshare-btn").click(() => {
             $("#start-screenshare-btn").attr('disabled', true);
             $("#stop-screenshare-btn").attr('disabled', false);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#stop-screenshare-btn").click(() => {
@@ -483,7 +506,7 @@ $("#stop-screenshare-btn").click(() => {
             $("#start-screenshare-btn").attr('disabled', false);
             $("#stop-screenshare-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 // Add a screen share stream to the web page
@@ -507,27 +530,32 @@ const addScreenShareNode = (participant, stream) => {
 
 // Remove the screen share stream from the web page
 const removeScreenShareNode = () => {
+    $('#stream-screenshare video')[0].srcObject = null; // Prevent memory leak in Chrome
     $('#stream-screenshare').remove();
 
     $("#start-screenshare-btn").attr('disabled', false);
     $("#stop-screenshare-btn").attr('disabled', true);
 }
-  
+
 
 // Add a new participant to the list
-const addParticipantNode = (participant) => {
-    // If the participant is the current session user, don't add himself to the list
-    if (participant.id === VoxeetSDK.session.participant.id) return;
+const addUpdateParticipantNode = (participant) => {
+    let template = $.templates("#template-participant");
 
     let elem = $(`#participant-${participant.id}`);
-    console.log(elem, participant);
-    if (!elem.length) {
-        elem = $('<li />')
-            .attr('id', `participant-${participant.id}`)
-            .appendTo('#participants-list');
-    }
+    const element = $(template.render({
+        id: participant.id,
+        avatarUrl: participant.info.avatarUrl,
+        name: participant.info.name,
+        status: participant.status,
+        isLocal: participant.id === VoxeetSDK.session.participant.id,
+    }));
 
-    elem.text(`${participant.info.name} - ${participant.status}`);
+    if (!elem.length) {
+        element.appendTo('#participants-list');
+    } else {
+        elem.replaceWith(element);
+    }
 };
 
 // Remove a participant from the list
@@ -550,7 +578,7 @@ $("#video-start-btn").click(() => {
             $("#video-pause-btn").attr('disabled', false);
             $("#video-play-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#video-stop-btn").click(() => {
@@ -564,7 +592,7 @@ $("#video-stop-btn").click(() => {
             $("#video-pause-btn").attr('disabled', true);
             $("#video-play-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#video-pause-btn").click(() => {
@@ -576,7 +604,7 @@ $("#video-pause-btn").click(() => {
             $("#video-pause-btn").attr('disabled', true);
             $("#video-play-btn").attr('disabled', false);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#video-play-btn").click(() => {
@@ -587,7 +615,7 @@ $("#video-play-btn").click(() => {
             $("#video-pause-btn").attr('disabled', false);
             $("#video-play-btn").attr('disabled', true);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 const addVideoPlayer = (videoUrl) => {
@@ -630,7 +658,7 @@ $("#start-recording-btn").click(() => {
     // Start recording the conference
     VoxeetSDK.recording.start()
         .then(() => setRecordingState(true))
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 $("#stop-recording-btn").click(() => {
@@ -639,7 +667,7 @@ $("#stop-recording-btn").click(() => {
     // Stop recording the conference
     VoxeetSDK.recording.stop()
         .then(() => setRecordingState(false))
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 
@@ -690,7 +718,7 @@ $("#start-rtmp-btn").click(async () => {
         $("#start-rtmp-btn").attr('disabled', true);
         $("#stop-rtmp-btn").attr('disabled', false);
     }).fail(function (err) {
-        logMessage(err);
+        logError(err);
     });
 });
 
@@ -713,7 +741,7 @@ $("#stop-rtmp-btn").click(async () => {
         $("#start-rtmp-btn").attr('disabled', false);
         $("#stop-rtmp-btn").attr('disabled', true);
     }).fail(function (err) {
-        logMessage(err);
+        logError(err);
     });
 });
 
@@ -730,7 +758,7 @@ $('#send-message-btn').click(() => {
         .then(() => {
             $("#message-input").val();
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 
@@ -751,7 +779,7 @@ $('#send-invitation-btn').click(() => {
         .then(() => {
             logMessage(`Invitation sent to ${externalId}`);
         })
-        .catch((err) => logMessage(err));
+        .catch((err) => logError(err));
 });
 
 
