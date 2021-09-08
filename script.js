@@ -432,7 +432,10 @@ const updateVideoMessage = (participant, stream) => {
   
 // Remove the video stream from the web page
 const removeVideoNode = (participant) => {
-    $(`#stream-${participant.id} video`)[0].srcObject = null; // Prevent memory leak in Chrome
+    const video = $(`#stream-${participant.id} video`);
+    if (video.length) {
+        video[0].srcObject = null; // Prevent memory leak in Chrome
+    }
     $(`#stream-${participant.id}`).remove();
 };
 
@@ -530,7 +533,10 @@ const addScreenShareNode = (participant, stream) => {
 
 // Remove the screen share stream from the web page
 const removeScreenShareNode = () => {
-    $('#stream-screenshare video')[0].srcObject = null; // Prevent memory leak in Chrome
+    const video = $('#stream-screenshare video');
+    if (video.length) {
+        video[0].srcObject = null; // Prevent memory leak in Chrome
+    }
     $('#stream-screenshare').remove();
 
     $("#start-screenshare-btn").attr('disabled', false);
