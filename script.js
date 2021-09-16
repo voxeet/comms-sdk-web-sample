@@ -70,7 +70,7 @@ $("#connect-btn").click(() => {
     const username = $('#username-input').val();
     const avatarUrl = $('#avatar-url-input').val();
   
-    // Open a session to the Dolby APIs
+    // Open a session to the Dolby.io APIs
     VoxeetSDK.session
         .open({ name: username, externalId: externalId, avatarUrl: avatarUrl })
         .then(() => {
