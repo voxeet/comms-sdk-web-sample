@@ -1,25 +1,16 @@
 # Dolby.io Web SDK Sample Application
 
-This sample application for the Dolby.io Web SDK is a more complete version of the [getting started](https://github.com/voxeet/voxeet-sdk-browser-gettingstarted/) project.
+This sample application for the Dolby.io Web SDK is a more complete version of the [getting started](https://github.com/dolbyio-samples/comms-sdk-web-getting-started) project.
 
 ## Where to start
 
-If you haven't done so already, create an account on [dolby.io](https://dolby.io/signup), it is free so do it today! Go to your dashboard and for the first application, get your `Consumer Key` and `Consumer Secret`.
+If you haven't done so already, create an account on [dolby.io](https://dolby.io/signup), it is free so do it today! Go to your dashboard and for the first application, go to the `Demos` menu and copy the client access token that is provided to you.
 
-In the file `script.js`, locate the following lines and set your key and secret.
+![Client Access Token](images/client-access-token.png)
 
-```javascript
-const consumerKey = "CONSUMER_KEY";
-const consumerSecret = "CONSUMER_SECRET";
-```
+Now, simply open the file `index.html` in your web browser and start playing with the application. Paste the access token in the first field. You can access this application at this URL: https://dolbyio-samples.github.io/comms-sdk-web-getting-started/
 
-> WARNING: It is best practice to use the VoxeetSDK.initializeToken function to initialize the SDK.
-> Please read the documentation at:
-> https://docs.dolby.io/communications-apis/docs/initializing-javascript
-
-Now, simply open the file `index.html` in your web browser and start playing with the application.
-
-> Make sure to read the [JavaScript documentation](https://docs.dolby.io/interactivity/docs/js-client-sdk-voxeetsdk) for the SDK.
+> Make sure to read the [JavaScript documentation](https://docs.dolby.io/communications-apis/docs/js-client-sdk-voxeetsdk) for the SDK.
 
 ## Features
 Here is the list of what you can do in this application:

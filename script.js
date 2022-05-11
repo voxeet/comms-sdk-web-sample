@@ -1,10 +1,3 @@
-// Set the consumerKey and consumerSecret variables
-// WARNING: It is best practice to use the VoxeetSDK.initializeToken function to initialize the SDK.
-// Please read the documentation at:
-// https://docs.dolby.io/communications-apis/docs/initializing-javascript
-const consumerKey = "CONSUMER_KEY";
-const consumerSecret = "CONSUMER_SECRET";
-
 const logMessage = (message) => {
     console.log(`${new Date().toISOString()} - ${message}`);
     $('#logs-area').val((_, text) => `${text}${new Date().toISOString()} - ${message}\r\n` );
@@ -19,6 +12,33 @@ const logError = (message) => {
 
     // Scroll to the end
     $('#logs-area').scrollTop($('#logs-area')[0].scrollHeight);
+};
+
+/**
+ * Initialize the SDK with an access token
+ */
+
+$("#initialize-btn").click(() => {
+    const accessToken = $('#access-token-input').val();
+    initializeSDK(accessToken);
+});
+
+const initializeSDK = (accessToken) => {
+    const token = accessToken.split('.')[1];
+    const jwt = JSON.parse(window.atob(token));
+    accessTokenExpiration = new Date(jwt.exp * 1000);
+    if (accessTokenExpiration.getTime() <= new Date().getTime()) {
+        logError('The access token you have provided has expired.');
+        return;
+    }
+
+    logMessage(`Initialize the SDK with the Access Token: ${accessToken}`);
+    logMessage(`Access Token Expiration: ${accessTokenExpiration}`);
+
+    VoxeetSDK.initializeToken(accessToken, () => new Promise((resolve) => resolve(accessToken)));
+
+    $('#initialize-btn').attr('disabled', true);
+    $('#connect-btn').attr('disabled', false);
 };
 
 var conferenceId;
@@ -790,10 +810,13 @@ $('#send-invitation-btn').click(() => {
 
 
 $(function() {
-
-    // Initialize the Voxeet SDK
-    VoxeetSDK.initialize(consumerKey, consumerSecret);
-    logMessage("The Voxeet SDK has been initialized");
+    // Automatically try to load the Access Token
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('token');
+    if (accessToken && accessToken.length > 0) {
+        $('#access-token-input').val(accessToken);
+        initializeSDK(accessToken);
+    }
 
     // Generate a random username
     let rand = Math.round(Math.random() * 10000);
@@ -807,5 +830,4 @@ $(function() {
 
     // Set the Voxeet SDK Version
     $('#sdk-version').text(VoxeetSDK.version);
-
 });
