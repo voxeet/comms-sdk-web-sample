@@ -1,0 +1,35 @@
+.container {
+    padding-bottom: 1rem;
+}
+
+h1.title, h2.title {
+    font-weight: 300;
+    font-size: 2.5rem;
+    text-align: center !important;
+    padding: 1.5rem
+}
+
+footer {
+    padding-top: 2rem;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.red {
+    color: red;
+}
+
+.gray {
+    color: gray;
+}
+
+.card video {
+    background-color: black;
+}
+
+.participant-avatar {
+    height: 25px;
+    width: 25px;
+}
