@@ -8,7 +8,7 @@ If you haven't done so already, create an account on [dolby.io](https://dolby.io
 
 ![Client Access Token](images/client-access-token.png)
 
-Now, simply open the file `index.html` in your web browser and start playing with the application. Paste the access token in the first field. You can access this application at this URL: https://dolbyio-samples.github.io/comms-sdk-web-getting-started/
+Now, simply open the file `index.html` in your web browser and start playing with the application. Paste the access token in the first field. You can access this application at this URL: https://dolbyio-samples.github.io/comms-sdk-web-sample/
 
 > Make sure to read the [JavaScript documentation](https://docs.dolby.io/communications-apis/docs/js-client-sdk-voxeetsdk) for the SDK.
 
