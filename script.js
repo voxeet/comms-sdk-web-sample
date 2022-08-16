@@ -352,6 +352,20 @@ $("#conference-leave-btn").click(function() {
         .then(() => {
             conferenceAccessToken = null;
 
+            //unsubsribe from the participant joined/left events
+            VoxeetSDK.notification.unsubscribe([{
+                type: "Participant.Left",
+                conferenceAlias: conference.alias
+            },
+            {
+                type: "Participant.Joined",
+                conferenceAlias: conference.alias
+            },
+            {
+                type: "Conference.ActiveParticipants",
+                conferenceAlias: conference.alias
+            }]);
+
             $('#chk-live-recording').attr('disabled', false);
 
             $('#btn-set-output-audio-device').attr('disabled', true);
