@@ -14,8 +14,16 @@ const logError = (message) => {
     $('#logs-area').scrollTop($('#logs-area')[0].scrollHeight);
 };
 
+
+// Do not configure your appKey and appSecret in this application,
+// you must use your server for authentication purpose 
+// Please refer to this link https://docs.dolby.io/communications-apis/docs/guides-client-authentication 
+const appKey = "<APP_KEY>"; 
+const appSecret = "<APP_SECRET>";
+
+
 /**
- * Initialize the SDK with an access token
+ * Initialize the SDK with a client access token
  */
 
 $("#initialize-btn").click(() => {
@@ -243,7 +251,7 @@ $("#conference-join-btn").click(() => {
                     $("#stop-rtmp-btn").attr('disabled', true);
 
                     $('#lls-status').removeClass('red').addClass('gray');
-                    $("#lls-lable-input").attr('readonly', false);
+                    $("#lls-stream-name-input").attr('readonly', false);
                     $("#lls-ptoken-input").attr('readonly', false);
                     $("#start-lls-btn").attr('disabled', false);
                     $("#stop-lls-btn").attr('disabled', true);
@@ -344,7 +352,7 @@ $("#conference-listen-btn").click(function() {
                     $("#stop-rtmp-btn").attr('disabled', true);
 
                     $('#lls-status').removeClass('red').addClass('gray');
-                    $("#lls-lable-input").attr('readonly', false);
+                    $("#lls-label-input").attr('readonly', false);
                     $("#lls-ptoken-input").attr('readonly', false);
                     $("#start-lls-btn").attr('disabled', true);
                     $("#stop-lls-btn").attr('disabled', true);
@@ -738,147 +746,6 @@ $("#stop-recording-btn").click(() => {
 
 
 /**
- * RTMP Streaming
- */
-
-const getAccessToken = () => {
-    //Please note do not configure your consumerkey and consumerSecret in application, you can use your server for authentication purpose 
-    //Please refer this link https://docs.dolby.io/communications-apis/docs/guides-client-authentication 
-    const consumerKey = "<CONSUMER_KEY>"; 
-    const consumerSecret = "<CONSUMER_SECRET>";
-    return new Promise((resolve, reject) => {
-        const authUrl = `https://api.voxeet.com/v1/auth/token`;
-        $.ajax({
-            async : true,
-            type: "POST",
-            url: authUrl,
-            contentType: "application/x-www-form-urlencoded",
-            data: "grant_type=client_credentials",
-            headers: {
-                "Authorization": "Basic: " + btoa(`${consumerKey}:${consumerSecret}`),
-            }
-        }).done(function (data) {
-            resolve(data);
-        }).fail(function (err) {
-            reject(err);
-        });
-    })
-};
-
-$("#start-rtmp-btn").click(async () => {
-    const rtmpUrl = $('#rtmp-url-input').val();
-    logMessage(`Start RTMP stream to ${rtmpUrl}`);
-
-    const jwt = await getAccessToken();
-
-    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/start`;
-    $.ajax({
-        async : true,
-        type: "POST",
-        url: url,
-        contentType: "application/json",
-        // dataType: 'json',
-        data: JSON.stringify({ uri: rtmpUrl }),
-        headers: {
-            "Authorization": "Bearer " + jwt.access_token
-        }
-    }).done(function () {
-        $('#rtmp-status').addClass('red').removeClass('gray');
-        $("#rtmp-url-input").attr('readonly', true);
-        $("#start-rtmp-btn").attr('disabled', true);
-        $("#stop-rtmp-btn").attr('disabled', false);
-    }).fail(function (err) {
-        logError(err);
-    });
-});
-
-$("#stop-rtmp-btn").click(async () => {
-    logMessage('Stop the RTMP stream');
-
-    const jwt = await getAccessToken();
-
-    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/stop`;
-    $.ajax({
-        async : true,
-        type: "POST",
-        url: url,
-        headers: {
-            "Authorization": "Bearer " + jwt.access_token
-        }
-    }).done(function () {
-        $('#rtmp-status').removeClass('red').addClass('gray');
-        $("#rtmp-url-input").attr('readonly', false);
-        $("#start-rtmp-btn").attr('disabled', false);
-        $("#stop-rtmp-btn").attr('disabled', true);
-    }).fail(function (err) {
-        logError(err);
-    });
-});
-
-/**
- * LLS
- */
-
- $("#start-lls-btn").click(async () => {
-    const llsLable = $('#lls-lable-input').val();
-    const pToken = $('#lls-ptoken-input').val();
-    logMessage(`Start LLS to ${llsLable}`);
-
-    const jwt = await getAccessToken();
-
-    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/start`;
-    $.ajax({
-        async : true,
-        type: "POST",
-        url: url,
-        contentType: "application/json",
-        // dataType: 'json',
-        data: JSON.stringify({ streamName: llsLable, publishingToken: pToken }),
-        headers: {
-            "Authorization": "Bearer " + jwt.access_token
-        }
-    }).done(function () {
-        logMessage('LLS start success!')
-        $('#lls-status').addClass('red').removeClass('gray');
-        $("#lls-lable-input").attr('readonly', true);
-        $("#lls-ptoken-input").attr('readonly', true);
-        $("#start-lls-btn").attr('disabled', true);
-        $("#stop-lls-btn").attr('disabled', false);
-    }).fail(function (err) {
-        logError(err);
-    });
-});
-
-$("#stop-lls-btn").click(async () => {
-    logMessage('Stop the LLS');
-
-    const jwt = await getAccessToken();
-
-    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/stop`;
-    $.ajax({
-        async : true,
-        type: "POST",
-        url: url,
-        contentType: "application/json",
-        // dataType: 'json',
-        data: JSON.stringify({}),
-        headers: {
-            "Authorization": "Bearer " + jwt.access_token
-        }
-    }).done(function () {
-        $('#lls-status').removeClass('red').addClass('gray');
-        $("#lls-lable-input").attr('readonly', false);
-        $("#lls-ptoken-input").attr('readonly', false);
-        $("#start-lls-btn").attr('disabled', false);
-        $("#stop-lls-btn").attr('disabled', true);
-    }).fail(function (err) {
-        logError(err);
-    });
-});
-
-
-
-/**
  * Send a message
  */
 
@@ -915,13 +782,184 @@ $('#send-invitation-btn').click(() => {
 });
 
 
+const isAppKeyConfigured = () => {
+    return appKey && appKey !== "<APP_KEY>" && appSecret && appSecret !== "<APP_SECRET>";
+};
+
+const getClientAccessToken = () => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            async : true,
+            type: "POST",
+            url: "https://session.voxeet.com/v1/oauth2/token",
+            contentType: "application/x-www-form-urlencoded",
+            data: "grant_type=client_credentials",
+            headers: {
+                "Accept": "application/json",
+                "Cache-Control": "no-cache",
+                "Authorization": "Basic " + btoa(`${appKey}:${appSecret}`),
+            }
+        }).done(function (data) {
+            resolve(data);
+        }).fail(function (err) {
+            reject(err);
+        });
+    });
+};
+
+const getAPIToken = () => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            async : true,
+            type: "POST",
+            url: "https://api.voxeet.com/v1/auth/token",
+            contentType: "application/x-www-form-urlencoded",
+            data: "grant_type=client_credentials",
+            headers: {
+                "Accept": "application/json",
+                "Cache-Control": "no-cache",
+                "Authorization": "Basic " + btoa(`${appKey}:${appSecret}`),
+            }
+        }).done(function (data) {
+            resolve(data);
+        }).fail(function (err) {
+            reject(err);
+        });
+    });
+};
+
+/**
+ * RTMP Streaming
+ */
+
+$("#start-rtmp-btn").click(async () => {
+    const rtmpUrl = $('#rtmp-url-input').val();
+    logMessage(`Start RTMP stream to ${rtmpUrl}`);
+
+    const jwt = await getAPIToken();
+
+    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/start`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        contentType: "application/json",
+        data: JSON.stringify({ uri: rtmpUrl }),
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        $('#rtmp-status').addClass('red').removeClass('gray');
+        $("#rtmp-url-input").attr('readonly', true);
+        $("#start-rtmp-btn").attr('disabled', true);
+        $("#stop-rtmp-btn").attr('disabled', false);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
+$("#stop-rtmp-btn").click(async () => {
+    logMessage('Stop the RTMP stream');
+
+    const jwt = await getAPIToken();
+
+    const url = `https://api.voxeet.com/v2/conferences/mix/${conferenceId}/rtmp/stop`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        $('#rtmp-status').removeClass('red').addClass('gray');
+        $("#rtmp-url-input").attr('readonly', false);
+        $("#start-rtmp-btn").attr('disabled', false);
+        $("#stop-rtmp-btn").attr('disabled', true);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
+/**
+ * Low Latency Streaming (LLS)
+ */
+
+$("#start-lls-btn").click(async () => {
+    const streamName = $('#lls-stream-name-input').val();
+    const pToken = $('#lls-ptoken-input').val();
+    logMessage(`Start LLS to ${streamName}`);
+
+    const jwt = await getAPIToken();
+
+    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/start`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        contentType: "application/json",
+        data: JSON.stringify({ streamName: streamName, publishingToken: pToken }),
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        logMessage('LLS start success!')
+        $('#lls-status').addClass('red').removeClass('gray');
+        $("#lls-stream-name-input").attr('readonly', true);
+        $("#lls-ptoken-input").attr('readonly', true);
+        $("#start-lls-btn").attr('disabled', true);
+        $("#stop-lls-btn").attr('disabled', false);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
+$("#stop-lls-btn").click(async () => {
+    logMessage('Stop the LLS');
+
+    const jwt = await getAPIToken();
+
+    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/stop`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        contentType: "application/json",
+        data: JSON.stringify({}),
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        $('#lls-status').removeClass('red').addClass('gray');
+        $("#lls-stream-name-input").attr('readonly', false);
+        $("#lls-ptoken-input").attr('readonly', false);
+        $("#start-lls-btn").attr('disabled', false);
+        $("#stop-lls-btn").attr('disabled', true);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
+
 $(function() {
+    const _isAppKeyConfigured = isAppKeyConfigured();
+    if (!_isAppKeyConfigured) {
+        // Hide backend operations when the API Key / Secret are not configured
+        $('[data-app-key-defined="yes"]').hide();
+    }
+
     // Automatically try to load the Access Token
     const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('token');
+    let accessToken = urlParams.get('token');
     if (accessToken && accessToken.length > 0) {
         $('#access-token-input').val(accessToken);
         initializeSDK(accessToken);
+    } else if (_isAppKeyConfigured) {
+        getClientAccessToken()
+            .then((jwt) => {
+                $('#access-token-input').val(jwt.access_token);
+                initializeSDK(jwt.access_token);
+            });
     }
 
     // Generate a random username
