@@ -146,6 +146,20 @@ $("#conference-join-btn").click(() => {
             // 2. Join the conference
             return VoxeetSDK.conference.join(conference, joinOptions)
                 .then(() => {
+                    //sunscribe to the participant joined/left events
+                    VoxeetSDK.notification.subscribe([{
+                        type: "Participant.Left",
+                        conferenceAlias: conference.alias
+                    },
+                    {
+                        type: "Participant.Joined",
+                        conferenceAlias: conference.alias
+                    },
+                    {
+                        type: "Conference.ActiveParticipants",
+                        conferenceAlias: conference.alias
+                    }]);
+
                     // Load the Output Audio devices
                     VoxeetSDK.mediaDevice.enumerateAudioDevices("output")
                         .then(devices => {
