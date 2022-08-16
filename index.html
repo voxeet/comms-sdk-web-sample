@@ -41,14 +41,14 @@
 
     <main role="main">
         <div class="container">
-            <h1 id="title" class="title">You are not connected to Dolby.io APIs</h1>
+            <h1 id="title" class="title">You are not connected to Dolby.io Communications APIs</h1>
 
             <!-- Access Token -->
             <div class="form-group row" data-conference="on">
-                <label for="message-input" class="col-sm-3 col-form-label">Access Token:</label>
+                <label for="message-input" class="col-sm-3 col-form-label">Client Access Token:</label>
                 <div class="col-sm-9">
                 <div class="input-group input-group-sm">
-                    <input id="access-token-input" type="text" class="form-control" placeholder="Get an access token from the Dolby.io dashboard">
+                    <input id="access-token-input" type="text" class="form-control" placeholder="Get a client access token from the Dolby.io dashboard">
                     <div class="input-group-append">
                         <button id="initialize-btn" class="btn btn-primary" type="button">Initialize</button>
                     </div>
@@ -233,42 +233,6 @@
                 </div>
             </div>
 
-            <!-- RTMP Streaming -->
-            <div class="form-group row" data-conference="on">
-                <label for="rtmp-url-input" class="col-sm-3 col-form-label">RTMP Stream URL:</label>
-                <div class="col-sm-9">
-                <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i id="rtmp-status" class="fas fa-broadcast-tower gray"></i></span>
-                    </div>
-                    <input id="rtmp-url-input" type="text" class="form-control" value="rtmp://a.rtmp.youtube.com/live2/">
-                    <div class="input-group-append">
-                        <button id="start-rtmp-btn" class="btn btn-primary" type="button" disabled>Start</button>
-                        <button id="stop-rtmp-btn" class="btn btn-danger" type="button" disabled>Stop</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
-
-            <!-- LLS -->
-            <div class="form-group row" data-conference="on">
-                <label for="lls-label-input" class="col-sm-3 col-form-labl">LLS:</label>
-                <div class="col-sm-9">
-                <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text"><i id="lls-status" class="fas fa-broadcast-tower gray"></i></span>
-                        </div>
-                    <input id="lls-lable-input" type="text" class="form-control" placeholder="Stream Name" >
-                    <input id="lls-ptoken-input" type="text" class="form-control" placeholder="Publishing Token" >
-                    <div class="input-group-append">
-                        <button id="start-lls-btn" class="btn btn-primary" type="button" disabled>Start</button>
-                        <button id="stop-lls-btn" class="btn btn-danger" type="button" disabled>Stop</button>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            
-
             <!-- Messaging -->
             <div class="form-group row" data-conference="on">
                 <label for="message-input" class="col-sm-3 col-form-label">Message:</label>
@@ -292,6 +256,41 @@
                         <button id="send-invitation-btn" class="btn btn-primary" type="button" disabled>Invite</button>
                     </div>
                   </div>
+                </div>
+            </div>
+
+            <!-- RTMP Streaming -->
+            <div class="form-group row" data-conference="on" data-app-key-defined="yes">
+                <label for="rtmp-url-input" class="col-sm-3 col-form-label">RTMP Stream URL:</label>
+                <div class="col-sm-9">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i id="rtmp-status" class="fas fa-broadcast-tower gray"></i></span>
+                    </div>
+                    <input id="rtmp-url-input" type="text" class="form-control" value="rtmp://a.rtmp.youtube.com/live2/">
+                    <div class="input-group-append">
+                        <button id="start-rtmp-btn" class="btn btn-primary" type="button" disabled>Start</button>
+                        <button id="stop-rtmp-btn" class="btn btn-danger" type="button" disabled>Stop</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Low Latency Stream (LLS) -->
+            <div class="form-group row" data-conference="on" data-app-key-defined="yes">
+                <label for="lls-stream-name-input" class="col-sm-3 col-form-label">Low Latency Stream (LLS):</label>
+                <div class="col-sm-9">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i id="lls-status" class="fas fa-broadcast-tower gray"></i></span>
+                        </div>
+                    <input id="lls-stream-name-input" type="text" class="form-control" placeholder="Stream name" >
+                    <input id="lls-ptoken-input" type="text" class="form-control" placeholder="Publishing token" >
+                    <div class="input-group-append">
+                        <button id="start-lls-btn" class="btn btn-primary" type="button" disabled>Start</button>
+                        <button id="stop-lls-btn" class="btn btn-danger" type="button" disabled>Stop</button>
+                    </div>
+                    </div>
                 </div>
             </div>
 
