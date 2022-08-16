@@ -97,6 +97,21 @@ VoxeetSDK.notification.on("invitation", (invite) => {
     conferenceAccessToken = invite.conferenceAccessToken;
 });
 
+// When participants Join 
+VoxeetSDK.notification.on('participantJoined', (e) => {
+    logMessage(`Event - Participant Joined  ${e.participant.info.name}`);
+});
+
+// When participants Left 
+VoxeetSDK.notification.on('participantLeft', (e) => {
+    logMessage(`Event - Participant Left  ${e.participant.info.name}`);
+});
+
+// When participants Join/left
+VoxeetSDK.notification.on('activeParticipants', (e) => {
+    logMessage(`Event - activeParticipants count  ${e.participantCount}`);
+});
+
 // When other participants send a command
 VoxeetSDK.command.on('received', (participant, message) => {
     logMessage(`Event - command received from ${participant.info.name}: ${message}`);
