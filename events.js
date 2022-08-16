@@ -109,7 +109,7 @@ VoxeetSDK.notification.on('participantLeft', (e) => {
 
 // When participants Join/left
 VoxeetSDK.notification.on('activeParticipants', (e) => {
-    logMessage(`vent - activeParticipants count  ${e.participantCount}`);
+    logMessage(`Event - activeParticipants count  ${e.participantCount}`);
 });
 
 // When other participants send a command

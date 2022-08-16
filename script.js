@@ -242,6 +242,12 @@ $("#conference-join-btn").click(() => {
                     $("#start-rtmp-btn").attr('disabled', false);
                     $("#stop-rtmp-btn").attr('disabled', true);
 
+                    $('#lls-status').removeClass('red').addClass('gray');
+                    $("#lls-lable-input").attr('readonly', false);
+                    $("#lls-ptoken-input").attr('readonly', false);
+                    $("#start-lls-btn").attr('disabled', false);
+                    $("#stop-lls-btn").attr('disabled', true);
+
                     $('#send-message-btn').attr('disabled', false);
                     $('#send-invitation-btn').attr('disabled', false);
 
@@ -337,6 +343,12 @@ $("#conference-listen-btn").click(function() {
                     $("#start-rtmp-btn").attr('disabled', true);
                     $("#stop-rtmp-btn").attr('disabled', true);
 
+                    $('#lls-status').removeClass('red').addClass('gray');
+                    $("#lls-lable-input").attr('readonly', false);
+                    $("#lls-ptoken-input").attr('readonly', false);
+                    $("#start-lls-btn").attr('disabled', true);
+                    $("#stop-lls-btn").attr('disabled', true);
+                    
                     $('#send-message-btn').attr('disabled', false);
                     $('#send-invitation-btn').attr('disabled', false);
 
@@ -730,6 +742,10 @@ $("#stop-recording-btn").click(() => {
  */
 
 const getAccessToken = () => {
+    //Please note do not configure your consumerkey and consumerSecret in application, you can use your server for authentication purpose 
+    //Please refer this link https://docs.dolby.io/communications-apis/docs/guides-client-authentication 
+    const consumerKey = "<CONSUMER_KEY>"; 
+    const consumerSecret = "<CONSUMER_SECRET>";
     return new Promise((resolve, reject) => {
         const authUrl = `https://api.voxeet.com/v1/auth/token`;
         $.ajax({
@@ -761,7 +777,7 @@ $("#start-rtmp-btn").click(async () => {
         type: "POST",
         url: url,
         contentType: "application/json",
-        dataType: 'json',
+        // dataType: 'json',
         data: JSON.stringify({ uri: rtmpUrl }),
         headers: {
             "Authorization": "Bearer " + jwt.access_token
@@ -798,6 +814,68 @@ $("#stop-rtmp-btn").click(async () => {
         logError(err);
     });
 });
+
+/**
+ * LLS
+ */
+
+ $("#start-lls-btn").click(async () => {
+    const llsLable = $('#lls-lable-input').val();
+    const pToken = $('#lls-ptoken-input').val();
+    logMessage(`Start LLS to ${llsLable}`);
+
+    const jwt = await getAccessToken();
+
+    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/start`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        contentType: "application/json",
+        // dataType: 'json',
+        data: JSON.stringify({ streamName: llsLable, publishingToken: pToken }),
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        logMessage('LLS start success!')
+        $('#lls-status').addClass('red').removeClass('gray');
+        $("#lls-lable-input").attr('readonly', true);
+        $("#lls-ptoken-input").attr('readonly', true);
+        $("#start-lls-btn").attr('disabled', true);
+        $("#stop-lls-btn").attr('disabled', false);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
+$("#stop-lls-btn").click(async () => {
+    logMessage('Stop the LLS');
+
+    const jwt = await getAccessToken();
+
+    const url = `https://comms.api.dolby.io/v2/conferences/mix/${conferenceId}/lls/stop`;
+    $.ajax({
+        async : true,
+        type: "POST",
+        url: url,
+        contentType: "application/json",
+        // dataType: 'json',
+        data: JSON.stringify({}),
+        headers: {
+            "Authorization": "Bearer " + jwt.access_token
+        }
+    }).done(function () {
+        $('#lls-status').removeClass('red').addClass('gray');
+        $("#lls-lable-input").attr('readonly', false);
+        $("#lls-ptoken-input").attr('readonly', false);
+        $("#start-lls-btn").attr('disabled', false);
+        $("#stop-lls-btn").attr('disabled', true);
+    }).fail(function (err) {
+        logError(err);
+    });
+});
+
 
 
 /**
