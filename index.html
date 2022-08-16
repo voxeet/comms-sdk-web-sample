@@ -250,6 +250,25 @@
                 </div>
             </div>
 
+            <!-- LLS -->
+            <div class="form-group row" data-conference="on">
+                <label for="lls-label-input" class="col-sm-3 col-form-labl">LLS:</label>
+                <div class="col-sm-9">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i id="lls-status" class="fas fa-broadcast-tower gray"></i></span>
+                        </div>
+                    <input id="lls-lable-input" type="text" class="form-control" placeholder="Stream Name" >
+                    <input id="lls-ptoken-input" type="text" class="form-control" placeholder="Publishing Token" >
+                    <div class="input-group-append">
+                        <button id="start-lls-btn" class="btn btn-primary" type="button" disabled>Start</button>
+                        <button id="stop-lls-btn" class="btn btn-danger" type="button" disabled>Stop</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            
+
             <!-- Messaging -->
             <div class="form-group row" data-conference="on">
                 <label for="message-input" class="col-sm-3 col-form-label">Message:</label>
