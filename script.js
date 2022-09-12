@@ -367,24 +367,24 @@ $("#conference-listen-btn").click(function() {
 });
 
 $("#conference-leave-btn").click(function() {
+    // Unsubscribe from the participant joined/left events
+    VoxeetSDK.notification.unsubscribe([{
+        type: "Participant.Left",
+        conferenceAlias: conference.alias
+    },
+    {
+        type: "Participant.Joined",
+        conferenceAlias: conference.alias
+    },
+    {
+        type: "Conference.ActiveParticipants",
+        conferenceAlias: conference.alias
+    }]);
+
     // Leave the conference
     VoxeetSDK.conference.leave()
         .then(() => {
             conferenceAccessToken = null;
-
-            //unsubsribe from the participant joined/left events
-            VoxeetSDK.notification.unsubscribe([{
-                type: "Participant.Left",
-                conferenceAlias: conference.alias
-            },
-            {
-                type: "Participant.Joined",
-                conferenceAlias: conference.alias
-            },
-            {
-                type: "Conference.ActiveParticipants",
-                conferenceAlias: conference.alias
-            }]);
 
             $('#chk-live-recording').attr('disabled', false);
 
