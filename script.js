@@ -368,17 +368,18 @@ $("#conference-listen-btn").click(function() {
 
 $("#conference-leave-btn").click(function() {
     // Unsubscribe from the participant joined/left events
+    const alias = VoxeetSDK.conference.current.alias;
     VoxeetSDK.notification.unsubscribe([{
         type: "Participant.Left",
-        conferenceAlias: conference.alias
+        conferenceAlias: alias
     },
     {
         type: "Participant.Joined",
-        conferenceAlias: conference.alias
+        conferenceAlias: alias
     },
     {
         type: "Conference.ActiveParticipants",
-        conferenceAlias: conference.alias
+        conferenceAlias: alias
     }]);
 
     // Leave the conference
