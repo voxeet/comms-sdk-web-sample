@@ -52,7 +52,16 @@ const initializeSDK = (accessToken) => {
 var conferenceId;
 var conferenceAccessToken;
 
-const getConstraints = () => {
+const getConstraints = (joinWithAudio, joinWithVideo) => {
+    if (!joinWithVideo) {
+        return {
+            constraints: {
+                audio: joinWithAudio,
+                video: joinWithVideo
+            }
+        };
+    }
+
     let video = true;
 
     let value = $('#webrtc-constraints').val();
@@ -72,7 +81,7 @@ const getConstraints = () => {
 
     return {
         constraints: {
-            audio: true,
+            audio: joinWithAudio,
             video: video
         }
     };
@@ -130,7 +139,8 @@ function setDevices(name, listSelector, btnSelector, devices) {
 $('#conference-join-btn').click(async () => {
     try {
         const liveRecording = $('#chk-live-recording')[0].checked;
-        const dolbyVoice = $('#chk-dolby-voice')[0].checked;
+        const joinWithAudio = $('#chk-join-with-audio')[0].checked;
+        const joinWithVideo = $('#chk-join-with-video')[0].checked;
 
         // Default conference parameters
         // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-conferenceparameters
@@ -139,7 +149,7 @@ $('#conference-join-btn').click(async () => {
             rtcpMode: "average", // worst, average, max
             ttl: 0,
             videoCodec: "H264", // H264, VP8
-            dolbyVoice: dolbyVoice
+            dolbyVoice: true
         };
 
         // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-conferenceoptions
@@ -155,7 +165,7 @@ $('#conference-join-btn').click(async () => {
         conferenceId = conference.id;
 
         // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-joinoptions
-        const joinOptions = getConstraints();
+        const joinOptions = getConstraints(joinWithAudio, joinWithVideo);
         joinOptions.simulcast = false;
         if (conferenceAccessToken) {
             joinOptions.conferenceAccessToken = conferenceAccessToken;
@@ -203,13 +213,13 @@ $('#conference-join-btn').click(async () => {
         $('#conference-leave-btn').attr('disabled', false);
         $('#conference-alias-input').attr('readonly', true);
 
-        $('#start-video-btn').attr('disabled', true);
-        $('#stop-video-btn').attr('disabled', false);
+        $('#start-video-btn').attr('disabled', joinWithVideo);
+        $('#stop-video-btn').attr('disabled', !joinWithVideo);
 
-        $('#start-audio-btn').attr('disabled', true);
-        $('#stop-audio-btn').attr('disabled', false);
-        $('#mute-audio-btn').attr('disabled', false);
-        $('#unmute-audio-btn').attr('disabled', true);
+        $('#start-audio-btn').attr('disabled', joinWithAudio);
+        $('#stop-audio-btn').attr('disabled', !joinWithAudio);
+        $('#mute-audio-btn').attr('disabled', !joinWithAudio);
+        $('#unmute-audio-btn').attr('disabled', joinWithAudio);
 
         $('#start-screenshare-btn').attr('disabled', false);
         $('#stop-screenshare-btn').attr('disabled', true);
@@ -249,19 +259,18 @@ $('#conference-join-btn').click(async () => {
 $('#conference-listen-btn').click(async () => {
     try {
         const liveRecording = $('#chk-live-recording')[0].checked;
-        const dolbyVoice = $('#chk-dolby-voice')[0].checked;
     
         // Default conference parameters
-        // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceparameters
+        // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-conferenceparameters
         const conferenceParams = {
             liveRecording: liveRecording,
             rtcpMode: "average", // worst, average, max
             ttl: 0,
             videoCodec: "H264", // H264, VP8
-            dolbyVoice: dolbyVoice
+            dolbyVoice: true
         };
     
-        // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-conferenceoptions
+        // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-conferenceoptions
         const conferenceOptions = {
             alias: $('#conference-alias-input').val(),
             params: conferenceParams
@@ -407,7 +416,8 @@ $('#btn-set-output-audio-device').click(async () => {
 
 
 const startVideo = () => {
-    const payloadConstraints = getConstraints();
+    const hasAudio = VoxeetSDK.session.participant.streams[0].getAudioTracks().length > 0;
+    const payloadConstraints = getConstraints(hasAudio, true);
     payloadConstraints.constraints.video.deviceId = $('#video-devices').val();
     logMessage("VoxeetSDK.conference.startVideo with the options:");
     logMessage(JSON.stringify(payloadConstraints.constraints.video));
@@ -946,6 +956,8 @@ $("#btn-use-sdk-versions").click(async () => {
 
         // Set the Dolby.io SDK Version
         $('#sdk-version').text(VoxeetSDK.version);
+
+        registerEvents();
     });
 
     // Append to the `head` element
