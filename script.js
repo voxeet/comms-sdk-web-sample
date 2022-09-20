@@ -154,7 +154,7 @@ $('#conference-join-btn').click(async () => {
         logMessage(`Conference id: ${conference.id} & Conference alias ${conference.alias}`);
         conferenceId = conference.id;
 
-        // See: https://docs.dolby.io/interactivity/docs/js-client-sdk-model-joinoptions
+        // See: https://docs.dolby.io/communications-apis/docs/js-client-sdk-model-joinoptions
         const joinOptions = getConstraints();
         joinOptions.simulcast = false;
         if (conferenceAccessToken) {
@@ -915,28 +915,46 @@ $("#stop-lls-btn").click(async () => {
     });
 });
 
+$("#btn-use-sdk-versions").click(async () => {
+    const script = document.createElement('script');
+
+    const sdkVersion = $('#sdk-versions').val();
+    script.src = `https://cdn.jsdelivr.net/npm/@voxeet/voxeet-web-sdk@${sdkVersion}/dist/voxeet-sdk.min.js`;
+
+    script.addEventListener('load', async () => {
+        logMessage(`Dolby.io Communications SDK version ${sdkVersion} loaded from ${script.src}`);
+
+        const _isAppKeyConfigured = isAppKeyConfigured();
+        if (!_isAppKeyConfigured) {
+            // Hide backend operations when the API Key / Secret are not configured
+            $('[data-app-key-defined="yes"]').hide();
+        }
+
+        // Automatically try to load the Access Token
+        const urlParams = new URLSearchParams(window.location.search);
+        const accessToken = urlParams.get('token');
+        if (accessToken && accessToken.length > 0) {
+            $('#access-token-input').val(accessToken);
+            initializeSDK(accessToken);
+        } else if (_isAppKeyConfigured) {
+            const jwt = await getClientAccessToken();
+            $('#access-token-input').val(jwt.access_token);
+            initializeSDK(jwt.access_token);
+        } else {
+            $('#initialize-btn').attr('disabled', false);
+        }
+
+        // Set the Dolby.io SDK Version
+        $('#sdk-version').text(VoxeetSDK.version);
+    });
+
+    // Append to the `head` element
+    document.head.appendChild(script);
+
+    $('#btn-use-sdk-versions').attr('disabled', true);
+});
 
 $(function() {
-    const _isAppKeyConfigured = isAppKeyConfigured();
-    if (!_isAppKeyConfigured) {
-        // Hide backend operations when the API Key / Secret are not configured
-        $('[data-app-key-defined="yes"]').hide();
-    }
-
-    // Automatically try to load the Access Token
-    const urlParams = new URLSearchParams(window.location.search);
-    let accessToken = urlParams.get('token');
-    if (accessToken && accessToken.length > 0) {
-        $('#access-token-input').val(accessToken);
-        initializeSDK(accessToken);
-    } else if (_isAppKeyConfigured) {
-        getClientAccessToken()
-            .then((jwt) => {
-                $('#access-token-input').val(jwt.access_token);
-                initializeSDK(jwt.access_token);
-            });
-    }
-
     // Generate a random username
     let rand = Math.round(Math.random() * 10000);
     $('#external-id-input').val(`guest-${rand}`);
@@ -946,7 +964,4 @@ $(function() {
     // Generate a random conference alias
     let conferenceAlias = "conf-" + Math.round(Math.random() * 10000);
     $('#conference-alias-input').val(conferenceAlias);
-
-    // Set the Voxeet SDK Version
-    $('#sdk-version').text(VoxeetSDK.version);
 });
