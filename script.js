@@ -416,7 +416,7 @@ $('#btn-set-output-audio-device').click(async () => {
 
 
 const startVideo = () => {
-    const hasAudio = VoxeetSDK.session.participant.streams[0].getAudioTracks().length > 0;
+    const hasAudio = VoxeetSDK.session.participant.streams.length && VoxeetSDK.session.participant.streams[0].getAudioTracks().length > 0;
     const payloadConstraints = getConstraints(hasAudio, true);
     if (payloadConstraints.constraints.video == true) {
         payloadConstraints.constraints.video = { deviceId: $('#video-devices').val() };
