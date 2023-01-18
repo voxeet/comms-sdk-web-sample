@@ -136,6 +136,22 @@ function setDevices(name, listSelector, btnSelector, devices) {
     $(btnSelector).attr('disabled', false);
 }
 
+async function updateDevices() {
+    // Load the Output Audio devices
+    let devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("output");
+    setDevices('Output Audio Devices', '#output-audio-devices', '#btn-set-output-audio-device', devices);
+
+    if (VoxeetSDK.session.participant.type !== 'listener') {
+        // Load the Input Audio devices
+        devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("input");
+        setDevices('Input Audio Devices', '#input-audio-devices', '#btn-set-input-audio-device', devices);
+    
+        // Load the Video devices
+        devices = await VoxeetSDK.mediaDevice.enumerateVideoDevices("input");
+        setDevices('Video Devices', '#video-devices', '#btn-set-video-device', devices);
+    }
+}
+
 $('#conference-join-btn').click(async () => {
     try {
         const liveRecording = $('#chk-live-recording')[0].checked;
@@ -193,17 +209,7 @@ $('#conference-join-btn').click(async () => {
             }
         ]);
 
-        // Load the Output Audio devices
-        let devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("output");
-        setDevices('Output Audio Devices', '#output-audio-devices', '#btn-set-output-audio-device', devices);
-
-        // Load the Input Audio devices
-        devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("input");
-        setDevices('Input Audio Devices', '#input-audio-devices', '#btn-set-input-audio-device', devices);
-
-        // Load the Video devices
-        devices = await VoxeetSDK.mediaDevice.enumerateVideoDevices("input");
-        setDevices('Video Devices', '#video-devices', '#btn-set-video-device', devices);
+        await updateDevices();
 
         $('#btn-set-webrtc-constraints').attr('disabled', false);
 
@@ -289,10 +295,8 @@ $('#conference-listen-btn').click(async () => {
     
         // 2. Join the conference
         await VoxeetSDK.conference.listen(conference, listenOptions);
-        
-        // Load the Output Audio devices
-        const devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("output");
-        setDevices('Output Audio Devices', '#output-audio-devices', '#btn-set-output-audio-device', devices);
+
+        await updateDevices();
 
         $('#btn-set-webrtc-constraints').attr('disabled', false);
 
@@ -933,7 +937,7 @@ $("#btn-use-sdk-versions").click(async () => {
     const script = document.createElement('script');
 
     const sdkVersion = $('#sdk-versions').val();
-    script.src = `https://cdn.jsdelivr.net/npm/@voxeet/voxeet-web-sdk@${sdkVersion}/dist/voxeet-sdk.min.js`;
+    script.src = `https://cdn.jsdelivr.net/npm/@voxeet/voxeet-web-sdk@${sdkVersion}/dist/voxeet-sdk.js`;
 
     script.addEventListener('load', async () => {
         logMessage(`Dolby.io Communications SDK version ${sdkVersion} loaded from ${script.src}`);
