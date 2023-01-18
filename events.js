@@ -108,13 +108,14 @@ const registerEvents = () => {
         logMessage(`Event - Participant Left  ${e.participant.info.name}`);
     });
 
-    // When participants Join/left
-    VoxeetSDK.notification.on('activeParticipants', (e) => {
-        logMessage(`Event - activeParticipants count  ${e.participantCount}`);
-    });
-
     // When other participants send a command
     VoxeetSDK.command.on('received', (participant, message) => {
         logMessage(`Event - command received from ${participant.info.name}: ${message}`);
+    });
+
+    VoxeetSDK.mediaDevice.on('deviceChanged', async (result) => {
+        logMessage('Event - deviceChanged');
+        console.log(result);
+        await updateDevices();
     });
 };
