@@ -137,18 +137,20 @@ function setDevices(name, listSelector, btnSelector, devices) {
 }
 
 async function updateDevices() {
-    // Load the Output Audio devices
-    let devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("output");
-    setDevices('Output Audio Devices', '#output-audio-devices', '#btn-set-output-audio-device', devices);
-
-    if (VoxeetSDK.session.participant.type !== 'listener') {
-        // Load the Input Audio devices
-        devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("input");
-        setDevices('Input Audio Devices', '#input-audio-devices', '#btn-set-input-audio-device', devices);
+    if (VoxeetSDK.session.participant) {
+        // Load the Output Audio devices
+        let devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("output");
+        setDevices('Output Audio Devices', '#output-audio-devices', '#btn-set-output-audio-device', devices);
     
-        // Load the Video devices
-        devices = await VoxeetSDK.mediaDevice.enumerateVideoDevices("input");
-        setDevices('Video Devices', '#video-devices', '#btn-set-video-device', devices);
+        if (VoxeetSDK.session.participant.type !== 'listener') {
+            // Load the Input Audio devices
+            devices = await VoxeetSDK.mediaDevice.enumerateAudioDevices("input");
+            setDevices('Input Audio Devices', '#input-audio-devices', '#btn-set-input-audio-device', devices);
+        
+            // Load the Video devices
+            devices = await VoxeetSDK.mediaDevice.enumerateVideoDevices("input");
+            setDevices('Video Devices', '#video-devices', '#btn-set-video-device', devices);
+        }
     }
 }
 
