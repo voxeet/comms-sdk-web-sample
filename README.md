@@ -36,4 +36,4 @@ This sample application is using the following Open Source projects:
 ### Big Buck Bunny Video
 
 Big Buck Bunny is licensed under the Creative Commons Attribution 3.0 license.
-(c) copyright 2008, Blender Foundation / [www.bigbuckbunny.org](www.bigbuckbunny.org)
+(c) copyright 2008, Blender Foundation / [www.bigbuckbunny.org](https://www.bigbuckbunny.org)
